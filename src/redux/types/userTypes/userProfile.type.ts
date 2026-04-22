@@ -1,0 +1,22 @@
+export type UserProfile = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  city: string;
+  area: string;
+  bio: string | null;
+  profile_picture: string | null;
+  date_of_birth: string | null;
+  alternate_phone: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  postal_code: string | null;
+  facebook_url: string | null;
+  twitter_url: string | null;
+  linkedin_url: string | null;
+  created_at: string;
+  updated_at: string;
+  profession?: string | null;
+};
