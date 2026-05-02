@@ -25,7 +25,7 @@ const Navbar = () => {
             <Link to="/" className="w-[132px] h-[52px]">
               <img src={logo} alt="Logo" />
             </Link>
-            {/* Desktop Menu */}
+            {/* Desktop Menu bar */}
             <nav className="hidden md:flex items-center ">
               <CommonHeader className="!text-[#111827]">
                 <ActiveLink to="/service">Service</ActiveLink>
