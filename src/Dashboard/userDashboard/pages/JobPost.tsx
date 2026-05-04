@@ -20,7 +20,7 @@ export type TJobPostPayload = {
   title: string;
   description: string;
   category: string;
-  sub_category: string;
+  sub_category: string[];
   city: string;
   street_address: string;
   house_address: string;
@@ -46,7 +46,7 @@ const JobPost = () => {
     image_url: null,
     previewUrl: "",
     category: "Home Improvement",
-    sub_category: "",
+    sub_category: [],
     city: "",
     street_address: "",
     house_address: "",
@@ -70,6 +70,7 @@ const JobPost = () => {
         formDataToSend.append("image", formData.image_url);
       }
 
+      // Format date for backend (MM/DD/YYYY)
       let formattedDate = formData.date;
       if (formData.date && formData.date.includes("-")) {
         const [year, month, day] = formData.date.split("-");
@@ -80,7 +81,8 @@ const JobPost = () => {
         title: formData.title,
         description: formData.description,
         category: formData.category,
-        sub_category: formData.sub_category,
+        sub_category: formData.sub_category.join(", "),
+        service_category: [formData.category, ...formData.sub_category],
         city: formData.city,
         street_address: formData.street_address,
         house_address: formData.house_address,
@@ -88,24 +90,33 @@ const JobPost = () => {
         preferred_time: formData.preferred_time,
         budget: Number(formData.budget) || 0,
         budget_type: formData.budget_type,
-        // image_url is handled by backend returning it after upload
       };
 
       formDataToSend.append("data", JSON.stringify(jsonData));
 
       const res = await createJobPost({ data: formDataToSend }).unwrap();
+      console.log("job post response data", res);
 
-      if (res) {
-        toast.success("Job posted successfully!");
+      if (res.success) {
+        toast.success(res.message);
         navigate("/user-dashboard/my-jobs");
       }
     } catch (error: any) {
       console.error("Post Job Error:", error);
-      toast.error(
-        error?.data?.message ||
-        error?.data?.error ||
-        "Failed to post job"
-      );
+      
+      const errorData = error?.data;
+      if (errorData && typeof errorData === "object") {
+        // If it's a validation error object (e.g. { image: ["..."], title: ["..."] })
+        Object.entries(errorData).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            value.forEach((msg: string) => toast.error(`${key}: ${msg}`));
+          } else if (typeof value === "string") {
+            toast.error(value);
+          }
+        });
+      } else {
+        toast.error(errorData?.message || errorData?.error || "Failed to post job");
+      }
     }
   };
 
@@ -168,6 +179,7 @@ const JobPost = () => {
               formData={formData}
               onPostJob={handlePostJob}
               isPosting={isPosting}
+              setCurrentStep={setCurrentStep}
             />
           )}
 

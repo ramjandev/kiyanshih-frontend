@@ -119,10 +119,10 @@ const JobSchedule: React.FC<JobScheduleProps> = ({ formData, updateFormData }) =
               }
               item={
                 [
-                  { label: "Anytime", value: "anytime" },
-                  { label: "Morning (8AM - 12PM)", value: "morning" },
-                  { label: "Afternoon (12PM - 5PM)", value: "afternoon" },
-                  { label: "Evening (5PM - 8PM)", value: "evening" },
+                  { label: "Anytime", value: "Anytime" },
+                  { label: "Morning (8AM - 12PM)", value: "Morning (8AM - 12PM)" },
+                  { label: "Afternoon (12PM - 5PM)", value: "Afternoon (12PM - 5PM)" },
+                  { label: "Evening (5PM - 8PM)", value: "Evening (5PM - 8PM)" },
                 ] as const
               }
               className={inputClass.input}

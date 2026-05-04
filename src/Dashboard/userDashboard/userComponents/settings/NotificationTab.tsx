@@ -1,50 +1,39 @@
-import { useGetNotificationSettingsQuery, useUpdateNotificationSettingsMutation } from "@/redux/featuresAPI/userAPI/settings.api";
-import Loader from "@/common/Loader";
+import { useUpdateNotificationSettingsMutation } from "@/redux/featuresAPI/userAPI/settings.api";
 import { toast } from "react-toastify";
-import type { UserPreferences } from "@/redux/types/userTypes/userSettings.type";
+import type { Settings, NotificationSetting } from "@/redux/types/userTypes/userSettings.type";
 import { useEffect, useState } from "react";
 
-const NotificationTab = () => {
-    const { data: response, isLoading, isError } = useGetNotificationSettingsQuery(undefined);
+interface NotificationTabProps {
+    settings: Settings
+}
+
+const NotificationTab: React.FC<NotificationTabProps> = ({ settings }) => {
     const [updateSettings, { isLoading: isUpdating }] = useUpdateNotificationSettingsMutation();
+    const [localNotifications, setLocalNotifications] = useState<NotificationSetting>(settings.notification_setting);
 
-    const settings = response?.settings;
-    const [localPreferences, setLocalPreferences] = useState<UserPreferences | null>(null);
-
-    // Sync local state when API data arrives
+    // Sync local state when settings prop changes
     useEffect(() => {
-        if (settings?.preferences) {
-            setLocalPreferences(settings.preferences);
-        }
-    }, [settings]);
+        setLocalNotifications(settings.notification_setting);
+    }, [settings.notification_setting]);
 
-    if (isLoading) return <div className="py-10"><Loader size={48} color="border-blue-600" /></div>;
-    if (isError || !settings) return <div className="text-center py-10 text-red-500">Failed to load notification settings.</div>;
-
-    // Use local state if available, otherwise fallback to API data
-    const preferences = localPreferences || settings.preferences;
-
-    const handleToggle = async (key: keyof UserPreferences) => {
+    const handleToggle = async (key: keyof NotificationSetting) => {
         if (isUpdating) return;
 
-        // Optimistic update
-        const previousState = localPreferences ? { ...localPreferences } : { ...settings.preferences };
-        const newPreferences = {
-            ...(localPreferences || settings.preferences),
-            [key]: !preferences[key]
+        const previousState = { ...localNotifications };
+        const newNotifications = {
+            ...localNotifications,
+            [key]: !localNotifications[key]
         };
 
-        setLocalPreferences(newPreferences);
+        setLocalNotifications(newNotifications);
 
         try {
-            const res = await updateSettings({
-                user_info: settings.user_info,
-                preferences: newPreferences
-            } as any).unwrap();
-
-            toast.success(res?.message || "Settings updated successfully!");
+            await updateSettings({
+                notification_setting: newNotifications
+            }).unwrap();
+            toast.success("Notification settings updated successfully!");
         } catch (error: any) {
-            setLocalPreferences(previousState);
+            setLocalNotifications(previousState);
             toast.error(error?.data?.message || "Something went wrong");
         }
     };
@@ -68,12 +57,12 @@ const NotificationTab = () => {
 
                         <button
                             role="switch"
-                            aria-checked={preferences.email_notifications}
+                            aria-checked={localNotifications.email_notifications}
                             onClick={() => handleToggle("email_notifications")}
-                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${preferences.email_notifications ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
+                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${localNotifications.email_notifications ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
                         >
                             <span
-                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${preferences.email_notifications ? 'translate-x-6' : 'translate-x-0.5'}`}
+                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${localNotifications.email_notifications ? 'translate-x-6' : 'translate-x-0.5'}`}
                             />
                         </button>
                     </div>
@@ -87,12 +76,12 @@ const NotificationTab = () => {
 
                         <button
                             role="switch"
-                            aria-checked={preferences.sms_notifications}
+                            aria-checked={localNotifications.sms_notifications}
                             onClick={() => handleToggle("sms_notifications")}
-                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${preferences.sms_notifications ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
+                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${localNotifications.sms_notifications ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
                         >
                             <span
-                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${preferences.sms_notifications ? 'translate-x-6' : 'translate-x-0.5'}`}
+                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${localNotifications.sms_notifications ? 'translate-x-6' : 'translate-x-0.5'}`}
                             />
                         </button>
                     </div>
@@ -106,12 +95,12 @@ const NotificationTab = () => {
 
                         <button
                             role="switch"
-                            aria-checked={preferences.job_alerts}
+                            aria-checked={localNotifications.job_alerts}
                             onClick={() => handleToggle("job_alerts")}
-                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${preferences.job_alerts ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
+                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${localNotifications.job_alerts ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
                         >
                             <span
-                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${preferences.job_alerts ? 'translate-x-6' : 'translate-x-0.5'}`}
+                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${localNotifications.job_alerts ? 'translate-x-6' : 'translate-x-0.5'}`}
                             />
                         </button>
                     </div>
@@ -125,12 +114,12 @@ const NotificationTab = () => {
 
                         <button
                             role="switch"
-                            aria-checked={preferences.booking_reminders}
+                            aria-checked={localNotifications.booking_reminders}
                             onClick={() => handleToggle("booking_reminders")}
-                            className={`relative inline-flex h-6 w-11 items-center cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${preferences.booking_reminders ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
+                            className={`relative inline-flex h-6 w-11 items-center cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${localNotifications.booking_reminders ? 'bg-blue-600' : 'bg-gray-200'} ${isUpdating ? 'opacity-70 pointer-events-none' : ''}`}
                         >
                             <span
-                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${preferences.booking_reminders ? 'translate-x-6' : 'translate-x-0.5'}`}
+                                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${localNotifications.booking_reminders ? 'translate-x-6' : 'translate-x-0.5'}`}
                             />
                         </button>
                     </div>

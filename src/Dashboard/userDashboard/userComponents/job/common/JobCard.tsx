@@ -70,15 +70,10 @@ const JobCardItem: React.FC<JobCardItemProps> = ({
   };
 
   const style = statusStyles[status] || statusStyles.default;
-  const statusLabel = job.status_display || status;
+  const statusLabel = job.status_display === "Open" ? "Active" : (job.status_display || status);
 
   // Determine Badge content
   let badgeContent = statusLabel;
-
-  // If job is open and has proposals, show proposal count in the badge instead of "Open"
-  if (status === "open" && proposalCountNumber > 0) {
-    badgeContent = proposalCountDisplay;
-  }
 
   const badge = (
     <span className={`px-4 py-1.5 text-xs md:text-sm font-medium rounded-full border ${style.text} ${style.bg} ${style.border} capitalize`}>
@@ -192,7 +187,7 @@ const JobCardItem: React.FC<JobCardItemProps> = ({
                     return job.time_posted || timeString;
                   })()}
                 </span>
-                {status !== "open" && proposalCountNumber > 0 && (
+                {proposalCountNumber > 0 && (
                   <span className="flex items-center">
                     <span className="w-1 h-1 bg-gray-300 rounded-full mr-2" />
                     {proposalCountDisplay}

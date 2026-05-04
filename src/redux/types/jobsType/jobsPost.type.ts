@@ -153,3 +153,9 @@ export interface PaymentVerifiedResponse {
   message: string;
   escrow_payment: EscrowPayment;
 }
+
+export type TCreateJobPostResponse = {
+  success: boolean;
+  message: string;
+  data: TJob;
+};

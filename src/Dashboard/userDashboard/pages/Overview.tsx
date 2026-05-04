@@ -10,6 +10,8 @@ import { useGetAllMyJobsQuery } from "@/redux/featuresAPI/userAPI/myJobs.api";
 const Overview = () => {
   const { data: overviewCardStats, isLoading } = useUserOverviewGetQuery(undefined);
   const { data: jobs, isLoading: isMyJobsLoading } = useGetAllMyJobsQuery(undefined);
+  console.log("overview data", overviewCardStats);
+  
 
   if (isLoading) {
     return <Loader size={64} color="border-blue-600" />;

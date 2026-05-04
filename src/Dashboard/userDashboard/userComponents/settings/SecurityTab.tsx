@@ -12,17 +12,7 @@ import { useDeleteAccountMutation, usePasswordUpdateMutation } from "@/redux/fea
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { logout } from "@/redux/featuresAPI/auth/auth.slice"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import DialogBox from "@/common/custom/DialogBox"
 
 
 // ✅ Zod validation schema (using camelCase for form fields as per user's recent change)
@@ -84,6 +74,8 @@ const SecurityTab = () => {
         }
     }
 
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
     const handleDeleteAccount = async () => {
         if (!deletePassword) {
             toast.error("Please enter your password to confirm");
@@ -94,6 +86,7 @@ const SecurityTab = () => {
             const res = await deleteAccount({ password: deletePassword }).unwrap();
             if (res.success) {
                 toast.success(res.message || "Account deleted successfully");
+                setIsDeleteDialogOpen(false);
                 dispatch(logout());
                 navigate("/login");
             } else {
@@ -109,7 +102,7 @@ const SecurityTab = () => {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-4 md:pb-8">
             {/* Password Update Card */}
             <Card className="border-gray-300">
                 <CardHeader>
@@ -131,7 +124,7 @@ const SecurityTab = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowOldPassword(!showOldPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                                 >
                                     {showOldPassword ? (
                                         <Eye className="h-5 w-5" />
@@ -159,7 +152,7 @@ const SecurityTab = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowNewPassword(!showNewPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                                 >
                                     {showNewPassword ? (
                                         <Eye className="h-5 w-5" />
@@ -187,7 +180,7 @@ const SecurityTab = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                                 >
                                     {showConfirmPassword ? (
                                         <Eye className="h-5 w-5" />
@@ -229,64 +222,70 @@ const SecurityTab = () => {
                     <CardTitle>Account Actions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
+                    <DialogBox
+                        open={isDeleteDialogOpen}
+                        onOpenChange={setIsDeleteDialogOpen}
+                        title="Are you absolutely sure?"
+                        description="This action cannot be undone. This will permanently delete your account and remove your data from our servers."
+                        trigger={
                             <Button
                                 variant="destructive"
+                                onClick={() => setIsDeleteDialogOpen(true)}
                                 disabled={isDeleting}
                                 className="w-full bg-red-600 hover:bg-red-700 cursor-pointer"
                             >
                                 {isDeleting ? "Deleting..." : "Delete Account"}
                             </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete your account
-                                    and remove your data from our servers.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-
-                            <div className="space-y-4 py-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="delete-password">Confirm your password</Label>
-                                    <div className="relative">
-                                        <Input
-                                            id="delete-password"
-                                            type={showDeletePassword ? "text" : "password"}
-                                            placeholder="Enter your password to confirm"
-                                            value={deletePassword}
-                                            onChange={(e) => setDeletePassword(e.target.value)}
-                                            className="pr-10"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowDeletePassword(!showDeletePassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                        >
-                                            {showDeletePassword ? (
-                                                <Eye className="h-5 w-5" />
-                                            ) : (
-                                                <EyeOff className="h-5 w-5" />
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <AlertDialogFooter>
-                                <AlertDialogCancel onClick={() => setDeletePassword("")}>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
+                        }
+                        footer={
+                            <div className="flex gap-3 justify-end w-full">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setDeletePassword("");
+                                        setIsDeleteDialogOpen(false);
+                                    }}
+                                    className="cursor-pointer border-gray-300"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
                                     onClick={handleDeleteAccount}
                                     disabled={!deletePassword || isDeleting}
-                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                    className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
                                 >
                                     {isDeleting ? "Deleting..." : "Delete Account"}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                                </Button>
+                            </div>
+                        }
+                    >
+                        <div className="space-y-4 py-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="delete-password">Confirm your password</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="delete-password"
+                                        type={showDeletePassword ? "text" : "password"}
+                                        placeholder="Enter your password to confirm"
+                                        value={deletePassword}
+                                        onChange={(e) => setDeletePassword(e.target.value)}
+                                        className="pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDeletePassword(!showDeletePassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                                    >
+                                        {showDeletePassword ? (
+                                            <Eye className="h-5 w-5" />
+                                        ) : (
+                                            <EyeOff className="h-5 w-5" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </DialogBox>
                 </CardContent>
             </Card>
         </div>

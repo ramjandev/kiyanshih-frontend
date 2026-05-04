@@ -91,7 +91,10 @@ const Notification = () => {
         </h2>
 
         <div className="space-y-6">
-          <div className="flex items-center justify-between py-4">
+          <div
+            className="flex items-center justify-between py-4 cursor-pointer"
+            onClick={toggleAllNotifications}
+          >
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                 All Notification
@@ -103,7 +106,10 @@ const Notification = () => {
             />
           </div>
 
-          <div className="flex items-center justify-between py-4">
+          <div
+            className="flex items-center justify-between py-4 cursor-pointer"
+            onClick={() => toggleSetting("emailNotifications")}
+          >
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                 Email Notifications
@@ -118,7 +124,10 @@ const Notification = () => {
             />
           </div>
 
-          <div className="flex items-center justify-between py-4">
+          <div
+            className="flex items-center justify-between py-4 cursor-pointer"
+            onClick={() => toggleSetting("smsNotifications")}
+          >
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                 SMS Notifications
@@ -135,7 +144,10 @@ const Notification = () => {
           </div>
 
           {/* Booking Reminders */}
-          <div className="flex items-center justify-between py-4">
+          <div
+            className="flex items-center justify-between py-4 cursor-pointer"
+            onClick={() => toggleSetting("bookingReminders")}
+          >
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                 Booking Reminders
