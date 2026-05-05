@@ -23,20 +23,20 @@ const PopularServices = () => {
 
   const services = servicesData?.results ?? [];
 
-  const mappedServices = services.map((service) => ({
-    id: String(service.id),
-    category: service.choose_category,
-    job_title: service.job_title,
-    provider: service.provider_name,
-    location: service.service_area,
-    price: Number(service.base_price),
-    rating: service.rating || 0,
-    reviews: service.total_reviews || 0,
-    image:
-      service.images?.[0]?.image_url ||
-      "https://via.placeholder.com/400x300",
-    verified: service.verified,
-  }));
+  const mappedServices = services
+    .filter((service) => service.rating >= 4)
+    .map((service) => ({
+      id: String(service.id),
+      category: service.choose_category,
+      job_title: service.job_title,
+      provider: service.provider_info.name,
+      location: service.location,
+      price: Number(service.base_price),
+      rating: service.rating || 0,
+      reviews: service.reviews_count || 0,
+      image: service.service_image || "https://via.placeholder.com/400x300",
+      verified: service.provider_info.is_verified,
+    }));
 
   const CATEGORIES = [
     "All Categories",
@@ -67,7 +67,6 @@ const PopularServices = () => {
             buttonLink="/user-dashboard/job-postings"
           />
         </div>
-
         <div className="w-full flex items-center gap-5">
           <CurveSearch className="w-full max-w-md" border="!border-border" />
           <div className="flex items-center gap-3">
@@ -93,7 +92,7 @@ const PopularServices = () => {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-[#0F172A]">Popular Services</h2>
-          <Link to="/user-dashboard/popular-services" className="text-[#1D4ED8] hover:underline font-semibold text-lg cursor-pointer">
+          <Link to="/user-dashboard/bookings" className="text-[#1D4ED8] hover:underline font-semibold text-lg cursor-pointer">
             See All
           </Link>
         </div>

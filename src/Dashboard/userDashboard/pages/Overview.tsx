@@ -5,11 +5,9 @@ import MyJob from "../userComponents/overview/MyJob";
 import RecentActivity from "../userComponents/overview/RecentActivity";
 import { useUserOverviewGetQuery } from "@/redux/featuresAPI/userAPI/overview.api";
 import Loader from "@/common/Loader";
-import { useGetAllMyJobsQuery } from "@/redux/featuresAPI/userAPI/myJobs.api";
 
 const Overview = () => {
   const { data: overviewCardStats, isLoading } = useUserOverviewGetQuery(undefined);
-  const { data: jobs, isLoading: isMyJobsLoading } = useGetAllMyJobsQuery(undefined);
   console.log("overview data", overviewCardStats);
   
 
@@ -21,7 +19,7 @@ const Overview = () => {
     <CommonWrapper>
       <OverviewCardSection overviewCardStats={overviewCardStats} />
       <PopularServices />
-      <MyJob jobs={jobs} isLoading={isMyJobsLoading} />
+      <MyJob />
       <RecentActivity />
     </CommonWrapper>
   );

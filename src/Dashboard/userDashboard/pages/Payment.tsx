@@ -14,10 +14,7 @@ import { format } from "date-fns";
 const Payment = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: undefined,
-    to: undefined,
-  });
+  const [date, setDate] = useState<DateRange | undefined>(undefined);
 
   // Handle search debouncing
   useEffect(() => {
@@ -30,7 +27,11 @@ const Payment = () => {
   const { data: allPayment, isLoading } = useGetAllPaymentHistoryQuery({
     search: debouncedSearch || undefined,
     from_date: date?.from ? format(date.from, "yyyy-MM-dd") : undefined,
-    to_date: date?.to ? format(date.to, "yyyy-MM-dd") : undefined,
+    to_date: date?.to 
+      ? format(date.to, "yyyy-MM-dd") 
+      : date?.from 
+        ? format(date.from, "yyyy-MM-dd") 
+        : undefined,
   });
 
   return (
@@ -65,14 +66,26 @@ const Payment = () => {
                 </ButtonWithIcon>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 !border-none" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
+                <div className="flex flex-col">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={date?.from}
+                    selected={date}
+                    onSelect={setDate}
+                    numberOfMonths={2}
+                  />
+                  {date && (
+                    <div className="p-3 border-t border-border flex justify-end">
+                      <button
+                        onClick={() => setDate(undefined)}
+                        className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
+                      >
+                        Clear Filter
+                      </button>
+                    </div>
+                  )}
+                </div>
               </PopoverContent>
             </Popover>
           </div>

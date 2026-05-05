@@ -40,7 +40,7 @@ const UserNavbar = () => {
       <CommonWrapper>
         <div className="w-full flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="w-[132px] h-[52px]">
+          <Link to="/user-dashboard/overview" className="w-[132px] h-[52px]">
             <img src={logo} alt="Logo" />
           </Link>
 

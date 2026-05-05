@@ -66,9 +66,7 @@ export type TJob = {
 };
 
 export type TJobListResponse = {
-  count: number;
-  next: string | null;
-  previous: string | null;
+  pagination: Pagination;
   results: TJob[];
 };
 

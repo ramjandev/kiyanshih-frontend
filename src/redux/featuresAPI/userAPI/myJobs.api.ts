@@ -11,6 +11,14 @@ const userOverviewAPI = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ["JobsPost"],
     }),
+    updateJobPost: build.mutation<TCreateJobPostResponse, { id: string | number; data: FormData }>({
+      query: ({ id, data }) => ({
+        url: `/user-dashboard/job-postings/${id}/update/`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["JobsPost"],
+    }),
     getAllJobsPost: build.query<GetAllJobs, void>({
       query: () => ({
         url: "/user-dashboard/job-postings/",
@@ -76,6 +84,7 @@ const userOverviewAPI = baseAPI.injectEndpoints({
 
 export const {
   useCreateJobPostMutation,
+  useUpdateJobPostMutation,
   useGetAllJobsPostQuery,
   useGetAllMyJobsQuery,
   useGetMyJobPostByIdQuery,

@@ -1,9 +1,8 @@
 import React from "react";
 import MediumHeader from "@/common/header/MediumHeader";
 import CommonHeader from "@/common/header/CommonHeader";
-import ButtonWithIcon from "@/common/button/ButtonWithIcon";
 import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface SectionHeaderProps {
   title?: string;
@@ -26,6 +25,7 @@ const UserSectionHeader: React.FC<SectionHeaderProps> = ({
   onTextClick,
   className = "",
 }) => {
+  const navigate = useNavigate();
   return (
     <div className={`${className} w-full flex items-center justify-between pb-6`}>
       {/* Title + Subtitle */}
@@ -42,17 +42,25 @@ const UserSectionHeader: React.FC<SectionHeaderProps> = ({
       <div className="flex items-center gap-4">
         {/* Button */}
         {button && (
-          <>
-            {onButtonClick ? (
-              <button onClick={onButtonClick}>
-                <ButtonWithIcon icon={Plus}>{button}</ButtonWithIcon>
-              </button>
-            ) : (
-              <Link to={buttonLink ?? "#"}>
-                <ButtonWithIcon icon={Plus}>{button}</ButtonWithIcon>
-              </Link>
-            )}
-          </>
+          <button
+            onClick={() => {
+              if (onButtonClick) {
+                onButtonClick();
+              } else if (buttonLink) {
+                navigate(buttonLink);
+              }
+            }}
+            className="group relative bg-[#1D4ED8] text-white flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap flex-shrink-0 cursor-pointer overflow-hidden border border-transparent"
+          >
+            {/* Slide-up background */}
+            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+
+            {/* Content (Title and Icon) */}
+            <div className="relative z-10 flex items-center gap-2 group-hover:text-[#1D4ED8] transition-colors duration-300">
+              <Plus className="w-5 h-5 transition-colors duration-300" />
+              {button}
+            </div>
+          </button>
         )}
 
         {/* Text */}

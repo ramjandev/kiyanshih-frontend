@@ -9,8 +9,6 @@ import Loader from "@/common/Loader";
 import { useGetAllMyJobsQuery } from "@/redux/featuresAPI/userAPI/myJobs.api";
 import AllJobs from "../userComponents/job/AllJobs";
 import type { TJob } from "@/redux/types/jobsType/jobsPost.type";
-import { Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export type JobsStatus =
   | "All Jobs"
@@ -26,7 +24,6 @@ const Job = () => {
   const { data, isLoading } = useGetAllMyJobsQuery(undefined);
   const [tab, setTab] = useState<JobsStatus>("All Jobs");
   const [currentPage, setCurrentPage] = useState(1);
-  const navigate = useNavigate();
 
   const allJobs: TJob[] = data?.results || [];
   console.log("alll jsobs get here", allJobs);
@@ -104,26 +101,12 @@ const Job = () => {
   return (
     <CommonWrapper>
       <CommonSpace className="flex-col !gap-6 !items-start">
-        <div className="w-full flex items-center justify-between">
-          <UserSectionHeader
-            className="!w-auto !pb-0"
-            title="My Jobs"
-            subtitle="Tell Us What You Need, We’ll Match You with Providers"
-          />
-          <button
-            onClick={() => navigate("/user-dashboard/job-postings")}
-            className="group relative bg-[#1D4ED8] text-white flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap flex-shrink-0 cursor-pointer overflow-hidden border border-transparent"
-          >
-            {/* Slide-up background */}
-            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-            
-            {/* Content (Title and Icon) */}
-            <div className="relative z-10 flex items-center gap-2 group-hover:text-[#1D4ED8] transition-colors duration-300">
-              <Plus className="w-5 h-5 transition-colors duration-300" />
-              Post a Job
-            </div>
-          </button>
-        </div>
+        <UserSectionHeader
+          title="My Jobs"
+          subtitle="Tell Us What You Need, We’ll Match You with Providers"
+          button="Post a Job"
+          buttonLink="/user-dashboard/job-postings"
+        />
 
         <CurveSearch className="!max-w-[340px] !w-full" />
       </CommonSpace>
