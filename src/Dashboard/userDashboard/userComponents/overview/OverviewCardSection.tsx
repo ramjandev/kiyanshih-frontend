@@ -6,7 +6,7 @@ import image4 from "@/assets/frame/blue.svg";
 import type { DashboardStats } from "@/redux/types/userTypes/overviewStats.type";
 
 interface StatsCardProps {
-  overviewCardStats: DashboardStats
+  overviewCardStats?: DashboardStats;
 }
 
 const OverviewCardSection = ({overviewCardStats}:StatsCardProps) => {
@@ -14,31 +14,31 @@ const OverviewCardSection = ({overviewCardStats}:StatsCardProps) => {
   // console.log("overviewCardStats",overviewCardStats);
 
   const metrics = [
-  {
-    title: "Total Spend",
-    value: `${overviewCardStats?.total_spend}` || 0,
-    color: "bg-[#FFF7ED]",
-    image: image1,
-  },
-  {
-    title: "Active Jobs",
-    value:`${overviewCardStats?.active_jobs}` || 0,
-    color: "bg-[#FEFCE8]",
-    image: image3,
-  },
-  {
-    title: "Total Bookings",
-    value: `${overviewCardStats?.total_bookings}` || 0,
-    color: "bg-[#F0FDF4]",
-    image: image2,
-  },
-  {
-    title: "Proposals Received",
-    value:`${overviewCardStats?.proposals_received}` || 0,
-    color: "bg-[#CFFAFE]",
-    image: image4,
-  },
-];
+    {
+      title: "Total Spend",
+      value: overviewCardStats?.total_spend !== undefined ? `$${overviewCardStats.total_spend.toLocaleString()}` : "$0",
+      color: "bg-[#FFF7ED]",
+      image: image1,
+    },
+    {
+      title: "Active Jobs",
+      value: overviewCardStats?.active_jobs?.toString() || "0",
+      color: "bg-[#FEFCE8]",
+      image: image3,
+    },
+    {
+      title: "Total Bookings",
+      value: overviewCardStats?.total_bookings?.toString() || "0",
+      color: "bg-[#F0FDF4]",
+      image: image2,
+    },
+    {
+      title: "Proposals Received",
+      value: overviewCardStats?.proposals_received?.toString() || "0",
+      color: "bg-[#CFFAFE]",
+      image: image4,
+    },
+  ];
 
   return (
     <>

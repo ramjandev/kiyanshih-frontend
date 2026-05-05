@@ -8,10 +8,10 @@ import Loader from "@/common/Loader";
 
 const Overview = () => {
   const { data: overviewCardStats, isLoading } = useUserOverviewGetQuery(undefined);
-  console.log("overview data", overviewCardStats);
+  // console.log("overview data", overviewCardStats);
   
 
-  if (isLoading) {
+  if (isLoading || !overviewCardStats) {
     return <Loader size={64} color="border-blue-600" />;
   }
 
