@@ -26,8 +26,6 @@ const UserNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const notificationCount = 3;
-
   const isProviderDashboard = location.pathname.startsWith(
     "/provider-dashboard",
   );
