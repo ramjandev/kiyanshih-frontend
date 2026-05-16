@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    image: anower77/kiyanshih-frontend:latest
+    env_file:
+      - .env
+    ports:
+      - "3000:80"
+    restart: always
+
+
+
