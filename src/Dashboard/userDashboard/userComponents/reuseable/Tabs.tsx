@@ -56,7 +56,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, basePath }) => {
         />
       </div>
 
-      <div className="hidden md:flex items-center gap-4  flex-wrap">
+      <div className="hidden md:flex items-center gap-4 flex-wrap">
         {tabs.map((tab) => {
           const active = isTabActive(tab);
 
@@ -64,22 +64,35 @@ const Tabs: React.FC<TabsProps> = ({ tabs, basePath }) => {
             <Link
               key={tab.value}
               to={tab.href}
-              className={`group inline-flex items-center  gap-2 px-4 py-2 rounded-md text-sm md:text-[18px] font-medium border transition-all
+              className={`group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm md:text-[18px] font-semibold border transition-all duration-300 overflow-hidden cursor-pointer active:scale-95 shadow-sm hover:shadow-md
                 ${
                   active
                     ? "bg-[#1D4ED8] text-white border-[#1D4ED8]"
-                    : "text-black border-[#CBD5E1] hover:bg-[#1D4ED8] hover:text-white"
+                    : "text-black bg-transparent border-[#CBD5E1] hover:border-[#1D4ED8]"
                 }`}
             >
-              {tab.icon && (
-                <span
-                  className={`flex items-center justify-center w-4 h-4 md:w-5 md:h-5
-                    ${active ? "text-white" : "text-black group-hover:text-white"}`}
-                >
-                  {tab.icon}
-                </span>
+              {/* Slide-up background animation */}
+              {active ? (
+                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              ) : (
+                <div className="absolute inset-0 bg-[#1D4ED8] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               )}
-              <span>{tab.title}</span>
+
+              {/* Dynamic Content Wrapper */}
+              <div
+                className={`relative z-10 flex items-center gap-2 transition-colors duration-300
+                  ${active ? "group-hover:text-[#1D4ED8]" : "group-hover:text-white"}`}
+              >
+                {tab.icon && (
+                  <span
+                    className={`flex items-center justify-center w-4 h-4 md:w-5 md:h-5 transition-colors duration-300
+                      ${active ? "text-white group-hover:text-[#1D4ED8]" : "text-black group-hover:text-white"}`}
+                  >
+                    {tab.icon}
+                  </span>
+                )}
+                <span>{tab.title}</span>
+              </div>
             </Link>
           );
         })}

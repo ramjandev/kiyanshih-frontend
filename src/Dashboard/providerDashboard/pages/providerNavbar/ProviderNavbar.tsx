@@ -51,7 +51,7 @@ const ProviderNavbar = () => {
       title: "Settings",
       value: "settings",
       href: "/provider-dashboard/settings",
-      icon: <Settings className="text-black"/>,
+      icon: <Settings />,
     },
   ];
 
