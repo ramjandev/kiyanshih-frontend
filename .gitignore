@@ -13,6 +13,7 @@ lerna-debug.log*
 # Dependencies
 # ------------------------------
 node_modules/
+nginx.conf
 
 # ------------------------------
 # Build outputs
@@ -55,8 +56,3 @@ build/
 # Deployment
 # ------------------------------
 .vercel/
-
-# ------------------------------
-# Custom files
-# ------------------------------
-config.bat
