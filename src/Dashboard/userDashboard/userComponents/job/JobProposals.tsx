@@ -13,6 +13,8 @@ interface JobProposalsProps {
 
 const JobProposals: FC<JobProposalsProps> = ({ job, showActions = true }) => {
   const { data: proposalsResponse, isLoading, isError } = useGetMyJobPostProposalsByIdQuery(job.id);
+  console.log("All job proposals response", proposalsResponse);
+
   const [acceptProposal, { isLoading: isAccepting, originalArgs: acceptArgs }] = useProposalsAcceptMutation();
   const [acceptProposalCheckout] = useProposalsAcceptCheckoutMutation();
   const [rejectProposal, { isLoading: isRejecting, originalArgs: rejectVars }] = useProposalsRejectMutation();

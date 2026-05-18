@@ -68,7 +68,10 @@ const Preferences = () => {
 
           <div className="space-y-6">
             {/* Show contact info */}
-            <div className="flex items-center justify-between py-4">
+            <div
+              className="flex items-center justify-between py-4 cursor-pointer"
+              onClick={() => handleToggle("showContactInfo")}
+            >
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                   Show contact info to User
@@ -84,7 +87,10 @@ const Preferences = () => {
             </div>
 
             {/* Public profile */}
-            <div className="flex items-center justify-between py-4">
+            <div
+              className="flex items-center justify-between py-4 cursor-pointer"
+              onClick={() => handleToggle("publicProfile")}
+            >
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-gray-900 text-sm sm:text-base">
                   Public profile

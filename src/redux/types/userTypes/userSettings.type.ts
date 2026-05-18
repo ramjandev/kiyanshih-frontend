@@ -1,28 +1,42 @@
-export type TUserSettings = {
-  id: number;
-
-  language: string;
-  timezone: string;
-  currency: string;
-
-  show_email: boolean;
-  show_phone: boolean;
-  make_profile_public: boolean;
-
-  email_notifications: boolean;
-  sms_notifications: boolean;
-  job_update_notifications: boolean;
-  message_notifications: boolean;
-  booking_notifications: boolean;
-  payment_notifications: boolean;
-  promotional_emails: boolean;
-
-  two_factor_enabled: boolean;
-  login_alerts: boolean;
-
-  created_at: string; // ISO datetime string
-  updated_at: string; // ISO datetime string
+export type UserInfo = {
+  email: string
+  first_name: string
+  last_name: string
+  phone_number: string
+  city: string
+  area: string
+  role: "normal_user" | "provider" | "admin" | string
 }
+
+export type PreferencesSetting = {
+  contact_info_show: boolean
+  public_profile_visible: boolean
+}
+
+export type NotificationSetting = {
+  email_notifications: boolean
+  sms_notifications: boolean
+  job_alerts: boolean
+  booking_reminders: boolean
+}
+
+export type Settings = {
+  user_info: UserInfo
+  preferences_setting: PreferencesSetting
+  notification_setting: NotificationSetting
+}
+
+export type UserSettingsResponse = {
+  success: boolean
+  settings: Settings
+  message?: string
+}
+
+// Keep TUserSettings as an alias for UserSettingsResponse if it's widely used, 
+// or update it to match the Settings object itself. 
+// Given the API query build.query<TUserSettings, void>, TUserSettings should likely be the full response or the settings object.
+// I'll make it the full response to match build.query behavior.
+export type TUserSettings = UserSettingsResponse;
 
 export type ChangePasswordPayload = {
   old_password: string;
@@ -42,39 +56,6 @@ export type DeleteAccountPayload = {
 export type DeleteAccountResponse = {
   success: boolean;
   message: string;
-}
-
-// notification get type 
-// User basic info
-export interface UserInfo {
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  city: string;
-  area: string;
-  role: "normal_user" | "provider" | "admin";
-}
-
-// User preferences
-export interface UserPreferences {
-  email_notifications: boolean;
-  sms_notifications: boolean;
-  job_alerts: boolean;
-  booking_reminders: boolean;
-}
-
-// Settings wrapper
-export interface UserSettings {
-  user_info: UserInfo;
-  preferences: UserPreferences;
-}
-
-// Full API response
-export interface UserSettingsResponse {
-  success: boolean;
-  settings: UserSettings;
-  message?: string;
 }
 
 export interface Transaction {

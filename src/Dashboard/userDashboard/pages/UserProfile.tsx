@@ -9,16 +9,28 @@ import { useUserProfileGetQuery, useUserProfileUpdateMutation } from "@/redux/fe
 import Loader from "@/common/Loader";
 import { toast } from "react-toastify";
 
+import SocialMediaForm from "../userComponents/UserProfile/SocialMediaForm";
+
 const UserProfile = () => {
     const { data: user, isLoading } = useUserProfileGetQuery(undefined);
     const [updateProfile, { isLoading: isUpdating }] = useUserProfileUpdateMutation();
 
     // Global form state
     const [formData, setFormData] = useState<any>({});
+    const [imageFiles, setImageFiles] = useState<{ [key: string]: File }>({});
 
     useEffect(() => {
         if (user) {
-            setFormData(user);
+            // Flatten the nested user_profile for the form state
+            const { user_profile, ...rest } = user as any;
+            setFormData({
+                ...rest,
+                ...user_profile,
+                // profile_picture is the avatar
+                // profile_cover_image is the cover banner
+                profile_image: user_profile?.profile_picture,
+                profile_cover_image: user_profile?.profile_cover_image,
+            });
         }
     }, [user]);
 
@@ -27,34 +39,73 @@ const UserProfile = () => {
         setFormData((prev: any) => ({ ...prev, [name]: value }));
     };
 
+    const handleImageChange = (file: File, fieldName: string) => {
+        setImageFiles((prev) => ({ ...prev, [fieldName]: file }));
+        // Create a local preview URL for the UI
+        const previewUrl = URL.createObjectURL(file);
+        setFormData((prev: any) => ({ ...prev, [fieldName]: previewUrl }));
+    };
+
     const handleGlobalSave = async () => {
         if (!user) return;
 
-        // Calculate delta (only changed fields)
-        const changedData: any = {};
+        const formDataPayload = new FormData();
+        let hasChanges = false;
 
-        // Define all valid keys to check
-        const fields = [
-            'first_name', 'last_name', 'email', 'phone_number',
-            'city', 'area', 'bio', 'profile_picture',
-            'address_line1', 'address_line2', 'postal_code',
-            'facebook_url', 'twitter_url', 'linkedin_url', 'profession'
+        // Root level fields in the API
+        const rootFields = ['first_name', 'last_name', 'phone_number', 'city', 'area'];
+        
+        // Nested user_profile fields in the API
+        const profileFields = [
+            'bio', 'date_of_birth', 'alternate_phone', 'address_line1', 
+            'postal_code', 'facebook_url', 'twitter_url', 'linkedin_url'
         ];
 
-        fields.forEach(field => {
-            if (formData[field] !== user[field as keyof typeof user]) {
-                changedData[field] = formData[field];
+        const userProfileData: any = {};
+        let hasProfileChanges = false;
+
+        // Check root fields against the original user object
+        rootFields.forEach(field => {
+            if (formData[field] !== (user as any)[field]) {
+                formDataPayload.append(field, formData[field]);
+                hasChanges = true;
             }
         });
 
-        if (Object.keys(changedData).length === 0) {
+        // Check profile fields against the original user.user_profile object
+        profileFields.forEach(field => {
+            const originalValue = (user as any).user_profile?.[field];
+            if (formData[field] !== originalValue) {
+                userProfileData[field] = formData[field];
+                hasProfileChanges = true;
+                hasChanges = true;
+            }
+        });
+
+        if (hasProfileChanges) {
+            formDataPayload.append('user_profile', JSON.stringify(userProfileData));
+        }
+
+        // Add buffered image files
+        Object.entries(imageFiles).forEach(([key, file]) => {
+            // Map to correct API keys: profile_image -> profile_picture, profile_cover_image -> profile_cover_image
+            let apiKey = key;
+            if (key === 'profile_image') apiKey = 'profile_picture';
+            if (key === 'profile_cover_image') apiKey = 'profile_cover_image';
+            
+            formDataPayload.append(apiKey, file);
+            hasChanges = true;
+        });
+
+        if (!hasChanges) {
             toast.info("No changes detected.");
             return;
         }
 
         try {
-            await updateProfile({ body: changedData }).unwrap();
+            await updateProfile(formDataPayload).unwrap();
             toast.success("Profile updated successfully!");
+            setImageFiles({});
         } catch (error) {
             console.error("Failed to update profile:", error);
             toast.error("Failed to update profile information.");
@@ -71,7 +122,8 @@ const UserProfile = () => {
                 <div className="space-y-6">
                     <ProfileHeader
                         user={user}
-                        updateProfile={updateProfile}
+                        formData={formData}
+                        handleImageChange={handleImageChange}
                         isUpdating={isUpdating}
                     />
                     <ProfileCompletion
@@ -82,6 +134,10 @@ const UserProfile = () => {
                         handleChange={handleChange}
                     />
                     <AddressInformationForm
+                        formData={formData}
+                        handleChange={handleChange}
+                    />
+                    <SocialMediaForm
                         formData={formData}
                         handleChange={handleChange}
                     />

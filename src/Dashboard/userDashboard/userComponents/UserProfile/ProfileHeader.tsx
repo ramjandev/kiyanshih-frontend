@@ -1,32 +1,23 @@
 import { useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Camera, Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
 import type { UserProfile } from "@/redux/types/userTypes/userProfile.type";
 
 interface ProfileHeaderProps {
     user: UserProfile | undefined;
-    updateProfile: any;
+    formData: any;
+    handleImageChange: (file: File, fieldName: string) => void;
     isUpdating: boolean;
 }
 
-const ProfileHeader = ({ user, updateProfile, isUpdating }: ProfileHeaderProps) => {
+const ProfileHeader = ({ user, formData, handleImageChange, isUpdating }: ProfileHeaderProps) => {
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const bannerInputRef = useRef<HTMLInputElement>(null);
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
         const file = e.target.files?.[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append(fieldName, file);
-
-        try {
-            await updateProfile({ body: formData }).unwrap();
-            toast.success(`${fieldName === 'profile_picture' ? 'Profile picture' : 'Banner image'} updated successfully!`);
-        } catch (error) {
-            console.error("Failed to upload image:", error);
-            toast.error(`Failed to update ${fieldName === 'profile_picture' ? 'profile picture' : 'banner image'}.`);
+        if (file) {
+            handleImageChange(file, fieldName);
         }
     };
 
@@ -38,20 +29,20 @@ const ProfileHeader = ({ user, updateProfile, isUpdating }: ProfileHeaderProps) 
                 ref={avatarInputRef}
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => handleImageUpload(e, "profile_picture")}
+                onChange={(e) => onFileSelect(e, "profile_image")}
             />
             <input
                 type="file"
                 ref={bannerInputRef}
                 className="hidden"
                 accept="image/*"
-                onChange={(e) => handleImageUpload(e, "banner_image")}
+                onChange={(e) => onFileSelect(e, "profile_cover_image")}
             />
 
             {/* Banner Image Section */}
             <div className="relative h-48 md:h-[250px] rounded-2xl overflow-hidden border border-slate-200 group">
                 <img
-                    src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070"
+                    src={formData?.profile_cover_image || "https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070"}
                     alt="Profile Banner"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -76,7 +67,7 @@ const ProfileHeader = ({ user, updateProfile, isUpdating }: ProfileHeaderProps) 
                             <div className="relative group">
                                 <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-white shadow-2xl relative">
                                     <AvatarImage
-                                        src={user?.profile_picture || undefined}
+                                        src={formData?.profile_image || undefined}
                                         alt={user?.first_name || "User"}
                                         className="object-cover"
                                     />
@@ -118,11 +109,6 @@ const ProfileHeader = ({ user, updateProfile, isUpdating }: ProfileHeaderProps) 
                                 <span className="text-xs font-bold text-gray-400 uppercase tracking-wider w-24">Phone</span>
                                 <span className="text-sm font-semibold text-gray-700">{user?.phone_number || "N/A"}</span>
                             </div>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider w-24">Profession</span>
-                                <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md inline-block w-fit">{user?.profession || "N/A"}</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,7 +121,7 @@ const ProfileHeader = ({ user, updateProfile, isUpdating }: ProfileHeaderProps) 
                             Bio
                         </h3>
                         <p className="text-gray-600 text-sm md:text-base leading-loose font-medium whitespace-pre-line">
-                            {user?.bio || "No bio information provided."}
+                            {user?.user_profile?.bio || formData?.bio || "No bio information provided."}
                         </p>
                     </div>
                 </div>

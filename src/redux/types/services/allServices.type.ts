@@ -4,22 +4,32 @@ export interface ServiceImage {
   image_url: string;
   order: number;
 }
+export interface ProviderInfo {
+  id: number;
+  name: string;
+  email: string;
+  phone_number: string;
+  city: string;
+  area: string;
+  is_verified: boolean;
+  logo: string;
+}
+
 export interface ProviderService {
   id: number;
-  provider_name: string;
   job_title: string;
+  provider_info: ProviderInfo;
+  service_image: string;
   choose_category: string;
-  base_price: string; // API sends string, keep it string
-  price_type: "hourly" | "fixed"; // extensible
-  service_area: string;
-  images: ServiceImage[];
-  status: "active" | "inactive" | "draft";
-  views_count: number;
-  availability_count: number;
-  created_at: string; // ISO date string
-  rating?: number;
-  total_reviews?: number;
-  verified?: boolean;
+  specific_services: string;
+  location: string;
+  base_price: string;
+  price_type: "hourly" | "fixed";
+  price_display: string;
+  rating: number;
+  reviews_count: number;
+  is_featured: boolean;
+  created_at: string;
 }
 export interface PaginatedProviderServicesResponse {
   count: number;

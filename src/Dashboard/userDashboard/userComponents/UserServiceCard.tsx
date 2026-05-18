@@ -44,7 +44,7 @@ const UserServiceDashboard: React.FC<UserServiceDashboardProps> = ({ stats }) =>
     {
       id: 2,
       icon: bagred,
-      count: stats?.confirmed_services?.toString() || "0",
+      count: stats?.confirm_services?.toString() || "0",
       label: "Confirm Services",
       bgColor: "bg-amber-50",
     },
@@ -58,7 +58,7 @@ const UserServiceDashboard: React.FC<UserServiceDashboardProps> = ({ stats }) =>
     {
       id: 4,
       icon: target,
-      count: stats?.cancelled_services?.toString() || "0",
+      count: stats?.cancel_services?.toString() || "0",
       label: "Cancel Services",
       bgColor: "bg-cyan-100",
     },
