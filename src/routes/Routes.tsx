@@ -70,9 +70,14 @@ const routes = createBrowserRouter([
       { path: "/provider/:name/:id", element: <SingleProvider /> },
       { path: "/provider-profile/:name", element: <ProviderProfileSetting /> },
       { path: "/how-it-works", element: <Work /> },
-      { path: "/login", element: <Login /> },
-      { path: "/client-signup", element: <ClientSignUp /> },
-      { path: "/provider-signup", element: <ProviderSignUp /> },
+      {
+        element: <ProtectedRoute isPublicAuth={true} />,
+        children: [
+          { path: "/login", element: <Login /> },
+          { path: "/client-signup", element: <ClientSignUp /> },
+          { path: "/provider-signup", element: <ProviderSignUp /> },
+        ],
+      },
 
       // Admin Dashboard Protected Routes
       {
