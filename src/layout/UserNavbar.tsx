@@ -63,7 +63,7 @@ const UserNavbar = () => {
                   <button className="outline-none">
                     <Avatar className="sm:h-[50px] sm:w-[50px] h-[40px] w-[40px] cursor-pointer">
                       <AvatarImage
-                        src={profile?.profile_image_url || undefined}
+                        src={(profile as any)?.user_profile?.profile_picture || profile?.profile_image_url || undefined}
                         alt={profile?.first_name || "User"}
                       />
                       <AvatarFallback className="bg-blue-200 text-gray-900 font-semibold text-xl">

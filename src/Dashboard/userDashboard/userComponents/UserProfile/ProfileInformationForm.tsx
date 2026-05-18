@@ -74,17 +74,31 @@ const ProfileInformationForm = ({ formData, handleChange }: ProfileInformationFo
                     />
                 </div>
 
-                {/* Profession */}
+                {/* Date of Birth */}
                 <div className="space-y-2">
                     <label className="block text-sm font-semibold text-gray-700">
-                        Profession
+                        Date of Birth
                     </label>
                     <input
-                        type="text"
-                        name="profession"
-                        value={formData.profession || ""}
+                        type="date"
+                        name="date_of_birth"
+                        value={formData.date_of_birth || ""}
                         onChange={handleChange}
-                        placeholder="e.g. Doctor, Engineer"
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900 transition-all cursor-pointer"
+                    />
+                </div>
+
+                {/* Alternate Phone */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-gray-700">
+                        Alternate Phone
+                    </label>
+                    <input
+                        type="tel"
+                        name="alternate_phone"
+                        value={formData.alternate_phone || ""}
+                        onChange={handleChange}
+                        placeholder="+1 (555) 000-0000"
                         className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-900 transition-all cursor-pointer"
                     />
                 </div>
