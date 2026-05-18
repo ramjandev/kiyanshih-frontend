@@ -123,6 +123,7 @@ const routes = createBrowserRouter([
           { path: "message", element: <UserMessage /> },
           { path: "my-jobs", element: <Job /> },
           { path: "my-jobs/:id", element: <UserJobDetails /> },
+          { path: "edit-job/:id", element: <JobPost /> },
           { path: "job-postings", element: <JobPost /> },
           { path: "payment-history", element: <Payment /> },
           { path: "bookings", element: <Bookings /> },

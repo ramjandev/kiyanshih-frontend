@@ -1,5 +1,5 @@
 import { baseAPI } from "@/redux/baseAPI/baseApi";
-import type { UserProfile } from "@/redux/types/userTypes/userProfile.type";
+import type { UserProfile, UserProfileResponse } from "@/redux/types/userTypes/userProfile.type";
 
 const userProfileAPI = baseAPI.injectEndpoints({
     endpoints: (build) => ({
@@ -13,7 +13,7 @@ const userProfileAPI = baseAPI.injectEndpoints({
         // }),
         userProfileGet: build.query<UserProfile, void>({
             query: () => ({
-                url: "/user-dashboard/profile/",
+                url: "/auth/me/",
                 method: "GET",
             }),
             providesTags: ["userProfile"],
@@ -25,11 +25,11 @@ const userProfileAPI = baseAPI.injectEndpoints({
         //   }),
         //   providesTags: ["Overview"],
         // }),
-        userProfileUpdate: build.mutation({
-            query: ({ body }) => ({
+        userProfileUpdate: build.mutation<UserProfileResponse, FormData | { body: any }>({
+            query: (data) => ({
                 url: "/user-dashboard/profile/update/",
                 method: "PUT",
-                body,
+                body: data instanceof FormData ? data : data.body,
             }),
             invalidatesTags: ["userProfile"],
         }),

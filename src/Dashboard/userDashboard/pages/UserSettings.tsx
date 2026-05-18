@@ -5,15 +5,41 @@ import NotificationTab from "../userComponents/settings/NotificationTab"
 import SecurityTab from "../userComponents/settings/SecurityTab"
 import SettingsTabs from "../userComponents/settings/SettingsTabs"
 
+import { useGetAllSettingsQuery } from "@/redux/featuresAPI/userAPI/settings.api"
+import Loader from "@/common/Loader"
+
 const UserSettings = () => {
   const [activeTab, setActiveTab] = useState("preferences")
+  const { data: response, isLoading, isError } = useGetAllSettingsQuery(undefined)
+
+  const settings = response?.settings
+
+  if (isLoading) {
+    return (
+      <CommonWrapper>
+        <div className="flex justify-center items-center min-h-[400px]">
+          <Loader size={48} color="border-blue-600" />
+        </div>
+      </CommonWrapper>
+    )
+  }
+
+  if (isError || !settings) {
+    return (
+      <CommonWrapper>
+        <div className="text-center py-10 text-red-500">
+          Failed to load settings. Please try again later.
+        </div>
+      </CommonWrapper>
+    )
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "preferences":
-        return <PreferencesTab />
+        return <PreferencesTab settings={settings} />
       case "notification":
-        return <NotificationTab />
+        return <NotificationTab settings={settings} />
       case "security":
         return <SecurityTab />
       default:

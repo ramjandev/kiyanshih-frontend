@@ -5,28 +5,21 @@ import CommonSpace from "@/common/space/CommonSpace";
 import UserSectionHeader from "../reuseable/UserSectionHeader";
 import JobCardItem from "../job/common/JobCard";
 import CommonLoader from "@/common/CommonLoader";
+import { useGetAllMyJobsQuery } from "@/redux/featuresAPI/userAPI/myJobs.api";
 
-import type { TJobListResponse } from "@/redux/types/jobsType/jobsPost.type";
+const JOBS_PER_PAGE = 5;
 
-interface MyJobProps {
-  jobs?: TJobListResponse;
-  isLoading?: boolean;
-}
-
-const JOBS_PER_PAGE = 3;
-
-const MyJob = ({ jobs, isLoading }: MyJobProps) => {
-
+const MyJob = () => {
+  const { data: jobs, isLoading } = useGetAllMyJobsQuery(undefined);
   const navigate = useNavigate();
 
   const jobList = jobs?.results || [];
 
   const [viewingJobId, setViewingJobId] = useState<number | null>(null);
 
-  // Filter only jobs with proposals for the Overview page
-  // If using API data, we need to filter. If using mock data (which I curated to have proposals), filter is still safe.
-  const proposalJobs = jobList.filter(job => job.status === "open" && ((job.applications_count && job.applications_count > 0) || (job.proposals_count && Number(job.proposals_count) > 0)));
-  const visibleJobs = proposalJobs.slice(0, JOBS_PER_PAGE);
+  // Filter only jobs with status "open"
+  const openJobs = jobList.filter(job => job.status === "open");
+  const visibleJobs = openJobs.slice(0, JOBS_PER_PAGE);
 
   const handleSeeAll = () => {
     navigate("/user-dashboard/my-jobs");
@@ -40,7 +33,6 @@ const MyJob = ({ jobs, isLoading }: MyJobProps) => {
         text="See All"
         onTextClick={handleSeeAll}
       />
-
       {isLoading ? (
         <CommonLoader />
       ) : (

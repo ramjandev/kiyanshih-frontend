@@ -1,12 +1,20 @@
 import { baseAPI } from "@/redux/baseAPI/baseApi";
-import type { GetAllJobs, JobProposalResponse, PaymentVerifiedResponse, StripeCheckoutResponse, TJobListResponse } from "@/redux/types/jobsType/jobsPost.type";
+import type { GetAllJobs, JobProposalResponse, PaymentVerifiedResponse, StripeCheckoutResponse, TCreateJobPostResponse, TJobListResponse } from "@/redux/types/jobsType/jobsPost.type";
 
 const userOverviewAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
-    createJobPost: build.mutation({
+    createJobPost: build.mutation<TCreateJobPostResponse, { data: FormData }>({
       query: ({ data }) => ({
         url: "/user-dashboard/job-postings/create/",
         method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["JobsPost"],
+    }),
+    updateJobPost: build.mutation<TCreateJobPostResponse, { id: string | number; data: FormData }>({
+      query: ({ id, data }) => ({
+        url: `/user-dashboard/job-postings/${id}/update/`,
+        method: "PATCH",
         body: data,
       }),
       invalidatesTags: ["JobsPost"],
@@ -76,6 +84,7 @@ const userOverviewAPI = baseAPI.injectEndpoints({
 
 export const {
   useCreateJobPostMutation,
+  useUpdateJobPostMutation,
   useGetAllJobsPostQuery,
   useGetAllMyJobsQuery,
   useGetMyJobPostByIdQuery,

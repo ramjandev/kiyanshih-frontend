@@ -5,63 +5,32 @@ import ServiceCard from "../userComponents/reuseable/ServiceCard";
 import BookingStatusBadge from "../userComponents/reuseable/BookingStatusBadge";
 import Pagination from "@/common/custom/Pagination";
 import UserServiceDashboard from "../userComponents/UserServiceCard";
-import { useGetAllServiceBookingsQuery } from "@/redux/featuresAPI/userAPI/bookings.api";
-import { useUserOverviewGetQuery } from "@/redux/featuresAPI/userAPI/overview.api";
-
-// Helper function to normalize status from API to tab label
-const normalizeStatus = (apiStatus: string): string => {
-  // Handle special case first
-  if (apiStatus === "accepted_complete_request") return "Completed";
-
-  // Convert snake_case or kebab-case to Title Case
-  const normalized = apiStatus
-    .toLowerCase()
-    .replace(/_/g, " ")
-    .replace(/-/g, " ")
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
-  return normalized;
-};
+import { useGetAllBookingsQuery } from "@/redux/featuresAPI/userAPI/bookings.api";
 
 const Bookings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch ALL bookings without status filter
-  const { data, isLoading, isError } = useGetAllServiceBookingsQuery({
-    page: currentPage,
-    // Don't pass status - fetch all data
-  }, { refetchOnMountOrArgChange: true });
-
-  const { data: statsData } = useUserOverviewGetQuery(undefined);
+  const { data, isLoading, isError } = useGetAllBookingsQuery(undefined);
 
   console.log("bookings data", data);
 
   // Define all status tabs as per design/requirement
-  const statusTabs = ["All", "Pending", "Confirmed", "Accepted", "In Progress", "Completed", "Rejected"];
+  const statusTabs = ["All", "Pending", "Confirmed", "Accepted", "In Progress", "Completed", "Rejected", "Cancelled"];
 
-  // Calculate counts dynamically from the fetched data
-  const statusCounts: Record<string, number> = useMemo(() => {
-    const counts: Record<string, number> = {
-      "All": data?.pagination.total_items || 0,
+  // Map status counts from the API response
+  const statusCounts = useMemo(() => {
+    if (!data?.status_counts) return {};
+    return {
+      "All": data.status_counts.all,
+      "Pending": data.status_counts.pending,
+      "Confirmed": data.status_counts.confirmed,
+      "Accepted": data.status_counts.accepted,
+      "In Progress": data.status_counts.in_progress,
+      "Completed": data.status_counts.completed,
+      "Rejected": data.status_counts.rejected,
+      "Cancelled": data.status_counts.cancelled,
     };
-
-    // Initialize all tabs with 0
-    statusTabs.forEach(tab => {
-      if (tab !== "All") counts[tab] = 0;
-    });
-
-    // Count each status from results
-    data?.results.forEach(booking => {
-      const status = normalizeStatus(booking.status);
-      if (counts[status] !== undefined) {
-        counts[status] = (counts[status] || 0) + 1;
-      }
-    });
-
-    return counts;
   }, [data]);
 
 
@@ -70,9 +39,22 @@ const Bookings: React.FC = () => {
     if (!data?.results) return [];
     if (activeTab === "All") return data.results;
 
+    // Map UI tab names to API status keys/values
+    const tabToStatusMap: Record<string, string[]> = {
+      "Pending": ["pending", "pending_payment"],
+      "Confirmed": ["confirmed"],
+      "Accepted": ["accepted"],
+      "In Progress": ["in_progress"],
+      "Completed": ["completed"],
+      "Rejected": ["rejected"],
+      "Cancelled": ["cancelled"],
+    };
+
+    const targetStatuses = tabToStatusMap[activeTab] || [activeTab.toLowerCase().replace(" ", "_")];
+
     return data.results.filter(booking => {
-      const normalizedStatus = normalizeStatus(booking.status);
-      return normalizedStatus === activeTab;
+      const bookingStatus = booking.service_status.toLowerCase();
+      return targetStatuses.some(status => bookingStatus.includes(status));
     });
   }, [data, activeTab]);
 
@@ -81,7 +63,7 @@ const Bookings: React.FC = () => {
   };
 
   const handleBookAgain = (id: number) => {
-    console.log("Book again service:", id);
+    console.log("Book again service:", id); 
   };
 
   const handleWriteReview = (id: number) => {
@@ -104,7 +86,7 @@ const Bookings: React.FC = () => {
   return (
     <CommonWrapper>
       <div>
-        <UserServiceDashboard stats={statsData} />
+        <UserServiceDashboard stats={data?.dashboard} />
       </div>
       <div className="py-6">
         <BookingTabs
@@ -128,26 +110,26 @@ const Bookings: React.FC = () => {
           ) : filteredBookings.length > 0 ? (
             filteredBookings.map((booking) => (
               <ServiceCard
-                id={booking.id}
-                key={booking.id}
+                id={booking.booking_id}
+                key={booking.booking_id}
                 imageSrc={booking.service_image}
                 name={booking.service_title}
-                providerName={booking.provider_name}
-                verified={true}
-                locationText="Remote"
+                providerName={booking.provider.name}
+                verified={booking.provider.provider_profile_verification === "verified"}
+                locationText={booking.service_area}
                 startingPrice={booking.total_amount}
-                rating={5.0}
-                reviewCount={0}
-                status={booking.status}
+                rating={booking.service_rating}
+                reviewCount={booking.service_reviews_count}
+                status={booking.service_status}
                 statusLabel={
                   <BookingStatusBadge
-                    status={booking.status}
-                    onClick={() => handleStatusClick(booking.id, booking.status)}
+                    status={booking.service_status}
+                    onClick={() => handleStatusClick(booking.booking_id, booking.service_status)}
                   />
                 }
-                onViewDetails={() => handleViewDetails(booking.id)}
-                onBookAgain={() => handleBookAgain(booking.id)}
-                onWriteReview={() => handleWriteReview(booking.id)}
+                onViewDetails={() => handleViewDetails(booking.booking_id)}
+                onBookAgain={() => handleBookAgain(booking.booking_id)}
+                onWriteReview={() => handleWriteReview(booking.booking_id)}
               />
             ))
           ) : (
@@ -160,11 +142,11 @@ const Bookings: React.FC = () => {
           )}
         </div>
 
-        {data && data.pagination.total_pages > 1 && (
+        {data && data.count > 10 && (
           <div className="mt-8 md:mt-12">
             <Pagination
-              currentPage={data.pagination.current_page}
-              totalPages={data.pagination.total_pages}
+              currentPage={currentPage}
+              totalPages={Math.ceil(data.count / 10)}
               onPageChange={handlePageChange}
             />
           </div>

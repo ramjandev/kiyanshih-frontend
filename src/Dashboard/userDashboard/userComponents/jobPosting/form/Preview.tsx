@@ -13,6 +13,7 @@ interface PreviewProps {
   formData: TJobPostPayload;
   onPostJob: () => void;
   isPosting: boolean;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const benefits = [
@@ -21,7 +22,7 @@ const benefits = [
   "Review provider profiles, ratings, and proposals",
 ];
 
-const Preview: React.FC<PreviewProps> = ({ formData, onPostJob, isPosting }) => {
+const Preview: React.FC<PreviewProps> = ({ formData, onPostJob, isPosting, setCurrentStep }) => {
   const handlePostJob = () => {
     onPostJob();
   };
@@ -52,7 +53,12 @@ const Preview: React.FC<PreviewProps> = ({ formData, onPostJob, isPosting }) => 
                 Job Details
               </CommonHeader>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 cursor-pointer"
+              onClick={() => setCurrentStep(1)}
+            >
               <FaRegEdit className="h-4 w-4" />
               <span className="sr-only">Edit job details</span>
             </Button>
@@ -91,14 +97,25 @@ const Preview: React.FC<PreviewProps> = ({ formData, onPostJob, isPosting }) => 
             <MediumHeader className=" !text-[#2D2D2D] !font-medium">
               Service Category
             </MediumHeader>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 cursor-pointer"
+              onClick={() => setCurrentStep(2)}
+            >
               <FaRegEdit className="h-4 w-4" />
               <span className="sr-only">Edit service category</span>
             </Button>
           </div>
           <div>
             <div className="flex flex-wrap gap-2">
-              <CommonButton>{formData.sub_category || "No Category Selected"}</CommonButton>
+              {formData.sub_category && formData.sub_category.length > 0 ? (
+                formData.sub_category.map((cat, index) => (
+                  <CommonButton key={index}>{cat}</CommonButton>
+                ))
+              ) : (
+                <span className="text-gray-400">No Services Selected</span>
+              )}
             </div>
           </div>
         </div>
@@ -109,7 +126,12 @@ const Preview: React.FC<PreviewProps> = ({ formData, onPostJob, isPosting }) => 
             <MediumHeader className=" !text-[#2D2D2D] !font-medium">
               Location & Schedule
             </MediumHeader>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 cursor-pointer"
+              onClick={() => setCurrentStep(3)}
+            >
               <FaRegEdit className="h-4 w-4" />
               <span className="sr-only">Edit location and schedule</span>
             </Button>
@@ -134,7 +156,12 @@ const Preview: React.FC<PreviewProps> = ({ formData, onPostJob, isPosting }) => 
             <MediumHeader className=" !text-[#2D2D2D] !font-medium">
               Budget
             </MediumHeader>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 cursor-pointer"
+              onClick={() => setCurrentStep(4)}
+            >
               <FaRegEdit className="h-4 w-4" />
               <span className="sr-only">Edit budget</span>
             </Button>

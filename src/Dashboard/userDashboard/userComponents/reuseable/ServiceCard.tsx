@@ -110,8 +110,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 }) => {
   const s = status?.toLowerCase();
 
-  const showViewDetails = s === "pending" || s === "completed" || s === "accepted_complete_request";
-  const showBookAgain = s === "completed" || s === "accepted_complete_request";
+  const showViewDetails = s === "pending" || s === "pending_payment" || s === "completed" || s === "accepted_complete_request" || s === "cancelled";
+  const showBookAgain = s === "completed" || s === "accepted_complete_request" || s === "cancelled";
   const showWriteReview = s === "completed" || s === "accepted_complete_request";
 
   const [openReview, setOpenReview] = useState(false);
@@ -223,7 +223,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           {!showBookAgain && showViewDetails && onViewDetails && (
             <button
               onClick={onViewDetails}
-              className="text-sm font-medium text-[#475569] hover:text-[#0056b3] border-b border-[#94A3B8] hover:border-[#0056b3] pb-0.5 leading-none"
+              className="text-sm font-medium text-[#475569] hover:text-[#0056b3] border-b border-[#94A3B8] hover:border-[#0056b3] pb-0.5 leading-none cursor-pointer"
             >
               View Details
             </button>

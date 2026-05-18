@@ -9,16 +9,14 @@ import Loader from "@/common/Loader";
 import { useGetAllMyJobsQuery } from "@/redux/featuresAPI/userAPI/myJobs.api";
 import AllJobs from "../userComponents/job/AllJobs";
 import type { TJob } from "@/redux/types/jobsType/jobsPost.type";
-import CommonButton from "@/common/button/CommonButton";
-import { Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export type JobsStatus =
   | "All Jobs"
   | "Active"
   | "Proposals"
   | "In-Progress"
-  | "Completed";
+  | "Completed"
+  | "Cancelled";
 
 const JOBS_PER_PAGE = 6;
 
@@ -26,26 +24,33 @@ const Job = () => {
   const { data, isLoading } = useGetAllMyJobsQuery(undefined);
   const [tab, setTab] = useState<JobsStatus>("All Jobs");
   const [currentPage, setCurrentPage] = useState(1);
-  const navigate = useNavigate();
 
   const allJobs: TJob[] = data?.results || [];
-  console.log(allJobs);
+  console.log("alll jsobs get here", allJobs);
   // 🔹 Filter jobs
   const filteredJobs = useMemo(() => {
     switch (tab) {
       case "Active":
-        // Show only open jobs with NO proposals (Active badge)
-        return allJobs.filter((j) => j.status === "open" && (!j.applications_count || j.applications_count === 0));
+        // Show all open jobs
+        return allJobs.filter((j) => j.status === "open");
 
       case "Proposals":
-        // Show jobs with proposals (Proposal badge) AND must be OPEN (not in-progress or completed)
-        return allJobs.filter((j) => j.status === "open" && ((j.applications_count && j.applications_count > 0) || (j.proposals_count && Number(j.proposals_count) > 0)));
+        // Show jobs with proposals AND must be OPEN
+        return allJobs.filter(
+          (j) =>
+            j.status === "open" &&
+            ((j.applications_count && j.applications_count > 0) ||
+              (j.proposals_count && Number(j.proposals_count) > 0))
+        );
 
       case "In-Progress":
         return allJobs.filter((j) => j.status === "in_progress");
 
       case "Completed":
         return allJobs.filter((j) => j.status === "completed");
+
+      case "Cancelled":
+        return allJobs.filter((j) => j.status === "cancelled");
 
       default:
         return allJobs;
@@ -68,10 +73,16 @@ const Job = () => {
   // 🔹 Counts
   const counts = {
     "All Jobs": allJobs.length,
-    Active: allJobs.filter((j) => j.status === "open" && (!j.applications_count || j.applications_count === 0)).length,
-    Proposals: allJobs.filter((j) => j.status === "open" && ((j.applications_count && j.applications_count > 0) || (j.proposals_count && Number(j.proposals_count) > 0))).length,
+    Active: allJobs.filter((j) => j.status === "open").length,
+    Proposals: allJobs.filter(
+      (j) =>
+        j.status === "open" &&
+        ((j.applications_count && j.applications_count > 0) ||
+          (j.proposals_count && Number(j.proposals_count) > 0))
+    ).length,
     "In-Progress": allJobs.filter((j) => j.status === "in_progress").length,
     Completed: allJobs.filter((j) => j.status === "completed").length,
+    Cancelled: allJobs.filter((j) => j.status === "cancelled").length,
   };
 
   const JobsTabs: JobsStatus[] = [
@@ -80,6 +91,7 @@ const Job = () => {
     "Proposals",
     "In-Progress",
     "Completed",
+    "Cancelled",
   ];
 
   if (isLoading) {
@@ -89,29 +101,24 @@ const Job = () => {
   return (
     <CommonWrapper>
       <CommonSpace className="flex-col !gap-6 !items-start">
-        <div className="w-full flex items-center justify-between">
-          <UserSectionHeader
-            title="My Jobs"
-            subtitle="Tell Us What You Need, We’ll Match You with Providers"
-          />
-          <CommonButton
-            onClick={() => navigate("/user-dashboard/job-postings")}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 !px-6"
-          >
-            <Plus className="w-4 h-4" />
-            Post a Job
-          </CommonButton>
-        </div>
+        <UserSectionHeader
+          title="My Jobs"
+          subtitle="Tell Us What You Need, We’ll Match You with Providers"
+          button="Post a Job"
+          buttonLink="/user-dashboard/job-postings"
+        />
 
         <CurveSearch className="!max-w-[340px] !w-full" />
       </CommonSpace>
 
-      <Tablist
-        tabs={JobsTabs}
-        activeTab={tab}
-        setTab={handleTabChange}
-        counts={counts}
-      />
+      <div className="py-6">
+        <Tablist
+          tabs={JobsTabs}
+          activeTab={tab}
+          setTab={handleTabChange}
+          counts={counts}
+        />
+      </div>
 
       <AllJobs jobs={paginatedJobs} activeTab={tab} showActions={tab === "Active" || tab === "Proposals"} />
 

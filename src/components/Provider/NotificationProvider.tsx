@@ -163,14 +163,14 @@ const NotificationProvider = () => {
               )}
               <button
                 onClick={() => refetch()}
-                className="text-xs text-gray-400 hover:text-gray-700 w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100"
+                className="text-xs text-gray-400 hover:text-gray-700 w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 cursor-pointer"
                 title="Refresh"
               >
                 ↻
               </button>
               <button
                 onClick={() => setOpen(false)}
-                className="text-xs text-gray-400 hover:text-gray-700 w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100"
+                className="text-xs text-gray-400 hover:text-gray-700 w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 cursor-pointer"
               >
                 ✕
               </button>
@@ -280,7 +280,7 @@ const NotificationProvider = () => {
                             handleMarkRead(n);
                           }}
                           title="Mark as read"
-                          className="w-6 h-6 rounded border border-gray-200 bg-white text-[10px] hover:bg-blue-600 hover:text-white hover:border-blue-600 transition flex items-center justify-center"
+                          className="w-6 h-6 rounded border border-gray-200 bg-white text-[10px] hover:bg-blue-600 hover:text-white hover:border-blue-600 transition flex items-center justify-center cursor-pointer"
                         >
                           ✓
                         </button>
@@ -305,7 +305,7 @@ const NotificationProvider = () => {
                 </p>
                 <button
                   onClick={() => setSelectedId(null)}
-                  className="text-gray-400 hover:text-gray-700 text-xs shrink-0"
+                  className="text-gray-400 hover:text-gray-700 text-xs shrink-0 cursor-pointer"
                 >
                   ✕
                 </button>

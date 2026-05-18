@@ -10,12 +10,13 @@ const BookingStatusBadge: React.FC<BookingStatusBadgeProps> = ({ status, onClick
     const s = status.toLowerCase();
     switch (s) {
       case "pending":
+      case "pending_payment":
         return {
           bgColor: "bg-yellow-50",
           textColor: "text-yellow-800",
           borderColor: "border-yellow-200",
           hoverColor: "hover:bg-yellow-100",
-          label: "Pending",
+          label: s === "pending" ? "Pending" : "Pending Payment",
         };
       case "accepted":
       case "confirmed":
@@ -27,12 +28,13 @@ const BookingStatusBadge: React.FC<BookingStatusBadgeProps> = ({ status, onClick
           label: s.charAt(0).toUpperCase() + s.slice(1),
         };
       case "rejected":
+      case "cancelled":
         return {
           bgColor: "bg-red-50",
           textColor: "text-red-500",
           borderColor: "border-red-200",
           hoverColor: "hover:bg-red-100",
-          label: "Rejected",
+          label: s.charAt(0).toUpperCase() + s.slice(1),
         };
       case "in-progress":
       case "in_progress":

@@ -38,15 +38,13 @@ const AllPopularServices = () => {
         id: String(service.id),
         category: service.choose_category,
         job_title: service.job_title,
-        provider: service.provider_name,
-        location: service.service_area,
+        provider: service.provider_info.name,
+        location: service.location,
         price: Number(service.base_price),
         rating: service.rating || 0,
-        reviews: service.total_reviews || 0,
-        image:
-            service.images?.[0]?.image_url ||
-            "https://via.placeholder.com/400x300",
-        verified: service.verified,
+        reviews: service.reviews_count || 0,
+        image: service.service_image || "https://via.placeholder.com/400x300",
+        verified: service.provider_info.is_verified,
     }));
 
     const filteredServices =
@@ -71,7 +69,6 @@ const AllPopularServices = () => {
                             subtitle="Browse verified providers in your area. Free for clients, transparent pricing, and reviews from real customers."
                         />
                     </div>
-
                     {/* Filter and Search Bar */}
                     <div className="flex flex-col md:flex-row gap-5 items-center w-full pt-4">
                         <CurveSearch className="w-full md:max-w-md" border="!border-border" />

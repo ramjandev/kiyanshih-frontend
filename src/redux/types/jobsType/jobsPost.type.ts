@@ -66,9 +66,7 @@ export type TJob = {
 };
 
 export type TJobListResponse = {
-  count: number;
-  next: string | null;
-  previous: string | null;
+  pagination: Pagination;
   results: TJob[];
 };
 
@@ -153,3 +151,9 @@ export interface PaymentVerifiedResponse {
   message: string;
   escrow_payment: EscrowPayment;
 }
+
+export type TCreateJobPostResponse = {
+  success: boolean;
+  message: string;
+  data: TJob;
+};

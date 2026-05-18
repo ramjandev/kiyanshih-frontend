@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { FileText, Pencil, ArrowLeft } from "lucide-react";
 import CommonWrapper from "@/common/space/CommonWrapper";
-import CommonButton from "@/common/button/CommonButton";
 import { useGetMyJobPostByIdQuery } from "@/redux/featuresAPI/userAPI/myJobs.api";
 import Loader from "@/common/Loader";
 
@@ -144,13 +143,19 @@ const JobDetails = () => {
                     {/* Edit Button */}
                     {isEditable && (
                         <div className="pt-4">
-                            <CommonButton
+                            <button
                                 onClick={() => navigate(`/user-dashboard/edit-job/${job.id}`)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium"
+                                className="group relative bg-[#1D4ED8] text-white flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap flex-shrink-0 cursor-pointer overflow-hidden border border-transparent"
                             >
-                                <Pencil className="w-4 h-4" />
-                                Edit your Job
-                            </CommonButton>
+                                {/* Slide-up background */}
+                                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+
+                                {/* Content (Title and Icon) */}
+                                <div className="relative z-10 flex items-center gap-2 group-hover:text-[#1D4ED8] transition-colors duration-300">
+                                    <Pencil className="w-5 h-5 transition-colors duration-300" />
+                                    Edit your Job
+                                </div>
+                            </button>
                         </div>
                     )}
 
