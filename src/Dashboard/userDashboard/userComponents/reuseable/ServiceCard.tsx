@@ -49,8 +49,6 @@ interface RatingStarsProps {
 }
 
 const RatingStars: React.FC<RatingStarsProps> = ({ rating = 0, size = 14 }) => {
-  if (!rating) return null;
-
   const stars = [];
   for (let i = 0; i < 5; i++) {
     const starIndex = i + 1;
@@ -90,6 +88,10 @@ interface ServiceCardProps {
   onBookAgain?: () => void;
   onWriteReview?: () => void;
   onStatusClick?: () => void;
+  expandedContent?: React.ReactNode;
+  isDetailsLoading?: boolean;
+  bookingDate?: string;
+  timeSlot?: string;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -107,6 +109,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   onBookAgain,
   onWriteReview,
   onStatusClick,
+  expandedContent,
+  isDetailsLoading = false,
 }) => {
   const s = status?.toLowerCase();
 
@@ -117,120 +121,142 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const [openReview, setOpenReview] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch hover:shadow-md transition-shadow duration-200">
-      <div className="flex items-start gap-4 min-w-0 flex-1">
-        {imageSrc && (
-          <img
-            src={imageSrc}
-            alt={name}
-            className="w-20 h-20 object-cover rounded-md flex-shrink-0"
-          />
-        )}
+    <div className="bg-white rounded-xl border border-gray-100 p-3 sm:p-4 flex flex-col gap-3 hover:shadow-md transition-shadow duration-200">
+      <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch justify-between w-full">
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              alt={name}
+              className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-md flex-shrink-0"
+            />
+          )}
 
-        <div className="min-w-0 flex-1 flex flex-col gap-1">
-          {/* Row 1: Title + Verified + Mobile Status */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2 min-w-0">
-              {/* Using providerName as main title if user implies "Mike Handyman" is provider, 
-                   but usually 'name' is service title. The image shows "Mike Handyman service".
-                   If that's the service name, good. */}
-              <h3 className="text-sm sm:text-base font-semibold text-[#0F172A] truncate">
-                {name}
-              </h3>
-              {verified && <VerifiedBadge />}
+          <div className="min-w-0 flex-1 flex flex-col gap-1">
+            {/* Row 1: Title + Verified + Mobile Status */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2 min-w-0">
+                {/* Using providerName as main title if user implies "Mike Handyman" is provider, 
+                     but usually 'name' is service title. The image shows "Mike Handyman service".
+                     If that's the service name, good. */}
+                <h3 className="text-sm sm:text-base font-semibold text-[#0F172A] truncate">
+                  {name}
+                </h3>
+                {verified && <VerifiedBadge />}
+              </div>
+              {/* Status Badge for mobile (hidden on md+) */}
+              {statusLabel && (
+                <div onClick={onStatusClick} className="md:hidden ml-2 flex-shrink-0">
+                  {statusLabel}
+                </div>
+              )}
             </div>
-            {/* Status Badge for mobile (hidden on md+) */}
-            {statusLabel && (
-              <div onClick={onStatusClick} className="md:hidden ml-2 flex-shrink-0">
-                {statusLabel}
+
+            {/* Row 2: Location */}
+            {locationText && (
+              <div className="text-xs sm:text-sm text-[#475569]">
+                Location: <span className="text-[#0F172A] font-semibold">{locationText.startsWith("-") ? locationText.replace(/^-\s*/, "") : locationText}</span>
+              </div>
+            )}
+
+            {/* Row 3: Price */}
+            {startingPrice && (
+              <div className="text-xs sm:text-sm md:text-[15px] text-[#334155] font-medium mt-1">
+                Starting : <span className="font-semibold text-[#0F172A]">${startingPrice}</span>
+              </div>
+            )}
+
+            {/* Row 4: Rating */}
+            {rating !== undefined && rating !== null && (
+              <div className="flex items-center gap-2 mt-1">
+                <RatingStars rating={rating} size={14} />
+                <div className="text-sm text-[#475569] font-medium">
+                  {rating.toFixed(1)}{" "}
+                  {reviewCount !== undefined && reviewCount !== null && (
+                    <span className="text-[#94A3B8] font-normal">({reviewCount} Reviews)</span>
+                  )}
+                </div>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Row 2: Location */}
-          {locationText && (
-            <div className="text-xs sm:text-sm text-[#475569]">
-              {locationText.startsWith("-") ? locationText : `- ${locationText}`}
+        {/* Right Section - Desktop Status + Buttons */}
+        <div className="hidden md:flex flex-col items-end justify-between h-auto min-h-[100px] w-auto flex-shrink-0">
+
+          {/* Status Badge */}
+          {statusLabel && (
+            <div onClick={onStatusClick}>
+              {statusLabel}
             </div>
           )}
 
-          {/* Row 3: Price */}
-          {startingPrice && (
-            <div className="text-xs sm:text-sm md:text-[15px] text-[#334155] font-medium mt-1">
-              Starting : <span className="font-semibold text-[#0F172A]">${startingPrice}</span>
-            </div>
-          )}
-
-          {/* Row 4: Rating */}
-          {rating && (
-            <div className="flex items-center gap-2 mt-1">
-              <RatingStars rating={rating} size={14} />
-              <div className="text-sm text-[#475569] font-medium">
-                {rating.toFixed(1)}{" "}
-                {reviewCount && (
-                  <span className="text-[#94A3B8] font-normal">({reviewCount} Reviews)</span>
+          {/* Buttons */}
+          <div className="flex flex-col items-end gap-2 mt-auto">
+            {showBookAgain && onBookAgain && (
+              <div className="flex items-center gap-3 whitespace-nowrap">
+                {showViewDetails && onViewDetails && (
+                  <button
+                    onClick={onViewDetails}
+                    disabled={isDetailsLoading}
+                    className="text-sm font-medium text-[#475569] hover:underline underline-offset-2 cursor-pointer hover:text-[#0056b3] flex items-center gap-1.5"
+                  >
+                    {isDetailsLoading && (
+                      <svg className="animate-spin h-3.5 w-3.5 text-[#475569]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    )}
+                    {isDetailsLoading ? "Loading..." : "View Details"}
+                  </button>
+                )}
+                <Link to={`/user-dashboard/book-service/${id}`}>
+                  <button
+                    className="text-sm font-medium text-[#475569] hover:underline underline-offset-2 cursor-pointer hover:text-[#0056b3]"
+                  >
+                    Book Again
+                  </button>
+                </Link>
+                {showWriteReview && onWriteReview && (
+                  <button
+                    onClick={() => {
+                      setOpenReview(true);
+                      if (onWriteReview) onWriteReview();
+                    }}
+                    className="text-sm font-medium text-[#007BFF] hover:underline underline-offset-2 cursor-pointer hover:text-[#0056b3]"
+                  >
+                    Write Review
+                  </button>
                 )}
               </div>
-            </div>
-          )}
-        </div>
-      </div>
+            )}
 
-      {/* Right Section - Desktop Status + Buttons */}
-      <div className="hidden md:flex flex-col items-end justify-between h-auto min-h-[100px] w-auto flex-shrink-0">
+            {/* Pending only shows View Details */}
+            {!showBookAgain && showViewDetails && onViewDetails && (
+              <button
+                onClick={onViewDetails}
+                disabled={isDetailsLoading}
+                className="text-sm font-medium text-[#475569] hover:text-[#0056b3] border-b border-[#94A3B8] hover:border-[#0056b3] pb-0.5 leading-none cursor-pointer flex items-center gap-1.5"
+              >
+                {isDetailsLoading && (
+                  <svg className="animate-spin h-3.5 w-3.5 text-[#475569]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {isDetailsLoading ? "Loading..." : "View Details"}
+              </button>
+            )}
 
-        {/* Status Badge */}
-        {statusLabel && (
-          <div onClick={onStatusClick}>
-            {statusLabel}
           </div>
-        )}
-
-        {/* Buttons */}
-        <div className="flex flex-col items-end gap-2 mt-auto">
-          {showBookAgain && onBookAgain && (
-            <div className="flex items-center gap-3 whitespace-nowrap">
-              {showViewDetails && onViewDetails && (
-                <button
-                  onClick={onViewDetails}
-                  className="text-sm font-medium text-[#475569] hover:underline underline-offset-2 cursor-pointer hover:text-[#0056b3]"
-                >
-                  View Details
-                </button>
-              )}
-              <Link to={`/user-dashboard/book-service/${id}`}>
-                <button
-                  className="text-sm font-medium text-[#475569] hover:underline underline-offset-2 cursor-pointer hover:text-[#0056b3]"
-                >
-                  Book Again
-                </button>
-              </Link>
-              {showWriteReview && onWriteReview && (
-                <button
-                  onClick={() => {
-                    setOpenReview(true);
-                    if (onWriteReview) onWriteReview();
-                  }}
-                  className="text-sm font-medium text-[#007BFF] hover:underline underline-offset-2 cursor-pointer hover:text-[#0056b3]"
-                >
-                  Write Review
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Pending only shows View Details */}
-          {!showBookAgain && showViewDetails && onViewDetails && (
-            <button
-              onClick={onViewDetails}
-              className="text-sm font-medium text-[#475569] hover:text-[#0056b3] border-b border-[#94A3B8] hover:border-[#0056b3] pb-0.5 leading-none cursor-pointer"
-            >
-              View Details
-            </button>
-          )}
-
         </div>
       </div>
+
+      {expandedContent && (
+        <div className="w-full border-t border-slate-100 pt-4 mt-2">
+          {expandedContent}
+        </div>
+      )}
 
       <ReviewDialog open={openReview} onOpenChange={setOpenReview} />
     </div>

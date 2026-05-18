@@ -57,3 +57,33 @@ export type Provider = {
   profile_image: string;
   provider_profile_verification: "verified" | "unverified" | string;
 };
+
+export type SingleBookingDetail = {
+  id: number;
+  service_name: string;
+  service_category: string | null;
+  service: number;
+  provider_name: string;
+  provider_phone: string;
+  provider_profile_picture: string | null;
+  booking_date: string;
+  time_slot: string;
+  service_price: string;
+  platform_fee: string;
+  total_amount: string;
+  provider_amount: string;
+  status: string;
+  status_display: string;
+  payment_status: string;
+  payment_status_display: string;
+  user_notes: string;
+  confirmed_by_user: boolean;
+  confirmed_by_user_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SingleBookingDetailResponse = {
+  success: boolean;
+  booking: SingleBookingDetail;
+};

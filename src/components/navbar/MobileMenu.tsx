@@ -1,6 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import CommonButton from "@/common/button/CommonButton";
 import CommonHeader from "@/common/header/CommonHeader";
+import { useAppSelector } from "@/redux/hooks";
+
+const roleRedirectMap = {
+  admin: "/admin-dashboard",
+  provider: "/provider-dashboard",
+  normal_user: "/user-dashboard",
+} as const;
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -8,6 +15,8 @@ interface MobileMenuProps {
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
+  const { accessToken, user } = useAppSelector((state) => state.auth);
+
   if (!isOpen) return null;
 
   return (
@@ -28,12 +37,21 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
 
         {/* Mobile Actions */}
         <div className="flex flex-col space-y-3 pt-4 border-t border-border/40">
-          <CommonButton
-            className="!bg-[#1D4ED8] !border-[#1D4ED8] !border !text-white"
-            onClick={onClose}
-          >
-            <Link to="/login">Sign In</Link>
-          </CommonButton>
+          {accessToken && user && user.role in roleRedirectMap ? (
+            <CommonButton
+              className="!bg-[#1D4ED8] !border-[#1D4ED8] !border !text-white"
+              onClick={onClose}
+            >
+              <Link to={roleRedirectMap[user.role as keyof typeof roleRedirectMap]}>Dashboard</Link>
+            </CommonButton>
+          ) : (
+            <CommonButton
+              className="!bg-[#1D4ED8] !border-[#1D4ED8] !border !text-white"
+              onClick={onClose}
+            >
+              <Link to="/login">Sign In</Link>
+            </CommonButton>
+          )}
         </div>
       </div>
     </div>
