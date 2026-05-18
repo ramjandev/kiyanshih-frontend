@@ -2,7 +2,6 @@ import { useState, type FC } from "react";
 import { Loader2 } from "lucide-react";
 import type { TJob, JobProposal } from "@/redux/types/jobsType/jobsPost.type";
 import { useGetMyJobPostProposalsByIdQuery, useProposalsAcceptCheckoutMutation, useProposalsAcceptMutation, useProposalsRejectMutation } from "@/redux/featuresAPI/userAPI/myJobs.api";
-import CommonButton from "@/common/button/CommonButton";
 import { toast } from "react-toastify";
 
 interface JobProposalsProps {
@@ -150,22 +149,46 @@ const JobProposals: FC<JobProposalsProps> = ({ job, showActions = true }) => {
                   <div className="flex gap-3 w-full sm:w-auto">
                     {showActions ? (
                       <>
-                        <CommonButton
-                          className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-6 py-2 h-auto text-sm cursor-pointer"
+                        <button
                           onClick={() => handleAccept(proposal.id)}
-                          isLoading={isAccepting && (acceptArgs as any)?.id === proposal.id}
                           disabled={isAccepting || isRejecting || isProcessingCheckout}
+                          className="group relative bg-blue-600 border border-transparent hover:border-blue-600 text-white flex items-center justify-center gap-2 px-6 py-2 rounded-md font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap cursor-pointer overflow-hidden disabled:cursor-not-allowed disabled:opacity-50 h-auto text-sm"
                         >
-                          Accept
-                        </CommonButton>
-                        <CommonButton
-                          className="bg-[#B91C1C] hover:bg-red-800 text-white rounded-md px-6 py-2 h-auto text-sm cursor-pointer"
+                          {/* Slide-up background */}
+                          <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                          
+                          {/* Content */}
+                          <div className="relative z-10 flex items-center justify-center gap-2 group-hover:text-blue-600 transition-colors duration-300">
+                            {isAccepting && (acceptArgs as any)?.id === proposal.id ? (
+                              <>
+                                <span className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                                <span>Accepting...</span>
+                              </>
+                            ) : (
+                              <span>Accept</span>
+                            )}
+                          </div>
+                        </button>
+                        <button
                           onClick={() => handleReject(proposal.id)}
-                          isLoading={isRejecting && (rejectVars as any)?.id === proposal.id}
                           disabled={isAccepting || isRejecting || isProcessingCheckout}
+                          className="group relative bg-[#B91C1C] border border-transparent hover:border-[#B91C1C] text-white flex items-center justify-center gap-2 px-6 py-2 rounded-md font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap cursor-pointer overflow-hidden disabled:cursor-not-allowed disabled:opacity-50 h-auto text-sm"
                         >
-                          Decline
-                        </CommonButton>
+                          {/* Slide-up background */}
+                          <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                          
+                          {/* Content */}
+                          <div className="relative z-10 flex items-center justify-center gap-2 group-hover:text-[#B91C1C] transition-colors duration-300">
+                            {isRejecting && (rejectVars as any)?.id === proposal.id ? (
+                              <>
+                                <span className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                                <span>Declining...</span>
+                              </>
+                            ) : (
+                              <span>Decline</span>
+                            )}
+                          </div>
+                        </button>
                       </>
                     ) : null}
                   </div>

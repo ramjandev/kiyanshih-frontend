@@ -7,19 +7,32 @@ const roleRedirectMap = {
   normal_user: "/user-dashboard",
 } as const;
 
-const ProtectedRoute = () => {
+interface ProtectedRouteProps {
+  isPublicAuth?: boolean;
+}
+
+const ProtectedRoute = ({ isPublicAuth = false }: ProtectedRouteProps) => {
   const { accessToken, user } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  // Not logged in
+  // If this is a public auth page (like login/signup)
+  if (isPublicAuth) {
+    if (accessToken && user && user.role in roleRedirectMap) {
+      const redirectPath = roleRedirectMap[user.role as keyof typeof roleRedirectMap];
+      return <Navigate to={redirectPath} replace />;
+    }
+    return <Outlet />;
+  }
+
+  // Otherwise, this is a protected dashboard page
   if (!accessToken || !user) {
     return <Navigate to="/" replace />;
   }
 
-  const redirectPath = roleRedirectMap[user.role];
+  const redirectPath = roleRedirectMap[user.role as keyof typeof roleRedirectMap];
 
   // Logged in but accessing another role's area
-  if (!location.pathname.startsWith(redirectPath)) {
+  if (redirectPath && !location.pathname.startsWith(redirectPath)) {
     return <Navigate to={redirectPath} replace />;
   }
 

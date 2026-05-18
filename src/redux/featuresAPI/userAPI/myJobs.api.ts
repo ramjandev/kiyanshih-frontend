@@ -9,7 +9,7 @@ const userOverviewAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["JobsPost"],
+      invalidatesTags: ["JobsPost", "ProviderBookings", "Bookings"],
     }),
     updateJobPost: build.mutation<TCreateJobPostResponse, { id: string | number; data: FormData }>({
       query: ({ id, data }) => ({
@@ -17,7 +17,7 @@ const userOverviewAPI = baseAPI.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["JobsPost"],
+      invalidatesTags: ["JobsPost", "ProviderBookings", "Bookings"],
     }),
     getAllJobsPost: build.query<GetAllJobs, void>({
       query: () => ({
@@ -32,7 +32,7 @@ const userOverviewAPI = baseAPI.injectEndpoints({
         url: "/user-dashboard/my-jobs/",
         method: "GET",
       }),
-      providesTags: ["JobsPost"],
+      providesTags: ["JobsPost", "ProviderBookings", "Bookings"],
     }),
 
     getMyJobPostById: build.query({
@@ -48,21 +48,21 @@ const userOverviewAPI = baseAPI.injectEndpoints({
         url: `/user-dashboard/job-postings/${id}/proposals/`,
         method: "GET",
       }),
-      providesTags: ["JobsPost"],
+      providesTags: ["JobsPost" , "ProviderBookings", "Bookings"],
     }),
     proposalsAccept: build.mutation<any, { id: number }>({
       query: ({ id }) => ({
         url: `/user-dashboard/proposals/${id}/accept/`,
         method: "POST",
       }),
-      invalidatesTags: ["JobsPost"],
+      invalidatesTags: ["JobsPost" , "ProviderBookings", "Bookings"],
     }),
     proposalsAcceptCheckout: build.mutation<{ data: StripeCheckoutResponse }, { id: number }>({
       query: ({ id }) => ({
         url: `/user-dashboard/accept-proposal/${id}/checkout/`,
         method: "POST",
       }),
-      invalidatesTags: ["JobsPost"],
+      invalidatesTags: ["JobsPost" , "ProviderBookings", "Bookings"],
     }),
     proposalsAcceptCheckoutVerify: build.mutation<PaymentVerifiedResponse, { session_id: string }>({
       query: (data) => ({
@@ -70,14 +70,14 @@ const userOverviewAPI = baseAPI.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["JobsPost"],
+      invalidatesTags: ["JobsPost" , "ProviderBookings", "Bookings"],
     }),
     proposalsReject: build.mutation({
       query: ({ id }) => ({
         url: `/user-dashboard/proposals/${id}/reject/`,
         method: "POST",
       }),
-      invalidatesTags: ["JobsPost"],
+      invalidatesTags: ["JobsPost" , "ProviderBookings", "Bookings"],
     }),
   }),
 });

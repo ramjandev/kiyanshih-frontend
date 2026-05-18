@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import React, { type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface CommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -25,7 +26,11 @@ const CommonButton: React.FC<CommonButtonProps> = ({
 
   return (
     <button
-      className={`px-4 sm:px-6 py-2 border rounded-md font-medium transition !flex-shrink-0 flex items-center justify-center gap-2 cursor-pointer ${variantClasses} ${className} disabled:cursor-not-allowed disabled:opacity-50`}
+      className={cn(
+        "px-4 sm:px-6 py-2 border rounded-md font-medium transition !flex-shrink-0 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+        variantClasses,
+        className
+      )}
       {...props}
     >
       {isCurrentlyLoading ? (
