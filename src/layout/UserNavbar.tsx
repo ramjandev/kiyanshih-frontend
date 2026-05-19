@@ -2,7 +2,7 @@ import logo from "@/assets/images/logo.png";
 import CommonWrapper from "@/common/space/CommonWrapper";
 import JoinModal from "@/components/navbar/JoinModal";
 import MobileMenu from "@/components/navbar/MobileMenu";
-import NotificationProvider from "@/components/Provider/NotificationProvider";
+import UserNotification from "@/components/User/UserNotification";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +46,7 @@ const UserNavbar = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-x-6">
-            <NotificationProvider />
+            <UserNotification />
             {/* Welcome + Avatar Dropdown */}
             <div className="flex items-center space-x-3">
               <div className="text-right">
