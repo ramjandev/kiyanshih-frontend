@@ -12,18 +12,9 @@ import ActiveLink from "@/components/navbar/ActiveLink";
 import CommonDropdown from "@/common/custom/CommonDropdown";
 import { languageItems } from "@/Dashboard/Admin/common/data";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
-import { useAppSelector } from "@/redux/hooks";
-
-const roleRedirectMap = {
-  admin: "/admin-dashboard",
-  provider: "/provider-dashboard",
-  normal_user: "/user-dashboard",
-} as const;
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
-  const { accessToken, user } = useAppSelector((state) => state.auth);
 
   return (
     <header className="bg-[#EFF6FF] w-full">
@@ -58,23 +49,15 @@ const Navbar = () => {
                 </span>
               }
             />
-            {accessToken && user && user.role in roleRedirectMap ? (
-              <CommonButton className="!bg-[#1D4ED8] !border-[#1D4ED8] !border !text-white !px-4 !py-2">
-                <Link to={roleRedirectMap[user.role as keyof typeof roleRedirectMap]}>Dashboard</Link>
-              </CommonButton>
-            ) : (
-              <>
-                <CommonButton className="border !border-[#1D4ED8] !px-4 !py-2">
-                  <Link to="/login"> Sign In</Link>
-                </CommonButton>
-                <CommonButton
-                  onClick={() => setIsJoinModalOpen(true)}
-                  className="!bg-[#1D4ED8] !border-[#1D4ED8] !border !text-white !px-4 !py-2"
-                >
-                  Get Started
-                </CommonButton>
-              </>
-            )}
+            <CommonButton className="border !border-[#1D4ED8] !px-4 !py-2">
+              <Link to="/login"> Sign In</Link>
+            </CommonButton>
+            <CommonButton
+              onClick={() => setIsJoinModalOpen(true)}
+              className="!bg-[#1D4ED8] !border-[#1D4ED8] !border !text-white !px-4 !py-2"
+            >
+              Get Started
+            </CommonButton>
           </div>
 
           {/* Mobile Menu Button */}

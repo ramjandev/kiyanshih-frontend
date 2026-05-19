@@ -24,8 +24,6 @@ build/
 # ------------------------------
 # Environment variables
 # ------------------------------
-.env
-.env.*
 !.env.example
 
 # ------------------------------
@@ -36,7 +34,6 @@ build/
 # ------------------------------
 # Editor & OS files
 # ------------------------------
-.vscode/*
 !.vscode/extensions.json
 .idea/
 .DS_Store
