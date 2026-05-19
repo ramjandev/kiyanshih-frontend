@@ -9,7 +9,7 @@ import { useUserProfileGetQuery, useUserProfileUpdateMutation } from "@/redux/fe
 import Loader from "@/common/Loader";
 import { toast } from "react-toastify";
 
-import SocialMediaForm from "../userComponents/UserProfile/SocialMediaForm";
+// import SocialMediaForm from "../userComponents/UserProfile/SocialMediaForm";
 
 const UserProfile = () => {
     const { data: user, isLoading } = useUserProfileGetQuery(undefined);
@@ -137,10 +137,10 @@ const UserProfile = () => {
                         formData={formData}
                         handleChange={handleChange}
                     />
-                    <SocialMediaForm
+                    {/* <SocialMediaForm
                         formData={formData}
                         handleChange={handleChange}
-                    />
+                    /> */}
                     <ProfileActions
                         onSave={handleGlobalSave}
                         isUpdating={isUpdating}
